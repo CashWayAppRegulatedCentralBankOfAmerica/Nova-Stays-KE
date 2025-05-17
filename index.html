@@ -16,7 +16,7 @@
     <div id="user-info" class="text-sm text-gray-700"></div>
   </div>
 
-  <!-- Vertical Location Bar -->
+  <!-- Location Buttons -->
   <div class="flex flex-wrap sm:flex-nowrap justify-center gap-2 mt-4 px-4">
     <a href="nairobi.html" class="bg-green-100 text-green-800 rounded-full px-4 py-2">Nairobi</a>
     <a href="mombasa.html" class="bg-green-100 text-green-800 rounded-full px-4 py-2">Mombasa</a>
@@ -25,29 +25,24 @@
     <a href="nakuru.html" class="bg-green-100 text-green-800 rounded-full px-4 py-2">Nakuru</a>
   </div>
 
-  <!-- Listings Grid -->
+  <!-- Listings -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6">
-    <!-- Sample Property Listing -->
+    <!-- Listing Item -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
-      <!-- Bootstrap Carousel -->
-      <div id="carouselExample1" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-          <div class="carousel-item active">
-            <img src="https://source.unsplash.com/400x300/?apartment" class="d-block w-100" alt="...">
-          </div>
-          <div class="carousel-item">
-            <img src="https://source.unsplash.com/400x300/?livingroom" class="d-block w-100" alt="...">
-          </div>
-          <!-- Add more images as needed -->
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample1" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+      <!-- Thumbnail Image (First Image of Carousel) -->
+      <img id="carouselThumb1" src="https://source.unsplash.com/400x300/?apartment" class="w-full h-60 object-cover" alt="Listing Image" />
+
+      <!-- Carousel Arrows Below Thumbnail -->
+      <div class="flex justify-center items-center gap-4 mt-2">
+        <button onclick="prevImage('1')" class="bg-gray-200 hover:bg-gray-300 p-2 rounded-full">
+          ◀
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample1" data-bs-slide="next">
-          <span class="carousel-control-next-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+        <button onclick="nextImage('1')" class="bg-gray-200 hover:bg-gray-300 p-2 rounded-full">
+          ▶
         </button>
       </div>
 
+      <!-- Listing Details -->
       <div class="p-4">
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center space-x-2">
@@ -72,22 +67,49 @@
           <span class="bg-gray-200 px-2 py-1 rounded-full">Hot Shower</span>
         </div>
 
-        <!-- Book Now Button -->
+        <!-- Book Now -->
         <button onclick="bookNow('Elegant Studio Apartment', 40, 'Nairobi')" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md">Book Now</button>
       </div>
     </div>
 
-    <!-- Copy the listing div above to add more properties -->
-
+    <!-- Copy above block to create more listings -->
   </div>
 
+  <!-- JavaScript -->
   <script>
-    // Show user info
     const name = localStorage.getItem("userFullName") || "Guest";
     const email = localStorage.getItem("userEmail") || "guest@example.com";
     document.getElementById("user-info").innerHTML = `<strong>${name}</strong> | ${email}`;
 
-    // Book Now Logic
+    // Carousel Image Sets
+    const images = {
+      "1": [
+        "https://source.unsplash.com/400x300/?apartment",
+        "https://source.unsplash.com/400x300/?livingroom",
+        "https://source.unsplash.com/400x300/?bedroom",
+        "https://source.unsplash.com/400x300/?kitchen",
+        "https://source.unsplash.com/400x300/?balcony",
+        "https://source.unsplash.com/400x300/?bathroom",
+        "https://source.unsplash.com/400x300/?pool",
+        "https://source.unsplash.com/400x300/?hotel",
+        "https://source.unsplash.com/400x300/?vacation",
+        "https://source.unsplash.com/400x300/?interior"
+      ]
+    };
+    const currentIndex = {
+      "1": 0
+    };
+
+    function nextImage(id) {
+      currentIndex[id] = (currentIndex[id] + 1) % images[id].length;
+      document.getElementById("carouselThumb" + id).src = images[id][currentIndex[id]];
+    }
+
+    function prevImage(id) {
+      currentIndex[id] = (currentIndex[id] - 1 + images[id].length) % images[id].length;
+      document.getElementById("carouselThumb" + id).src = images[id][currentIndex[id]];
+    }
+
     function bookNow(listingName, price, location) {
       localStorage.setItem("bookingName", listingName);
       localStorage.setItem("bookingPrice", price);
