@@ -17,7 +17,6 @@
   <!-- Header like listing page -->
   <header class="bg-white shadow p-4 flex justify-between items-center">
     <h1 class="text-xl font-bold text-green-600">Nova Stays KE</h1>
-    <!-- Could add something else here if needed -->
   </header>
 
   <main class="flex-grow flex items-center justify-center px-4 py-8">
@@ -47,11 +46,39 @@
     </div>
   </main>
 
+  <!-- Modal -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg p-6 max-w-sm w-full shadow-lg">
+      <p id="modalMessage" class="text-gray-800 text-center text-lg mb-4"></p>
+      <button id="modalCloseBtn" class="bg-green-600 text-white py-2 px-6 rounded hover:bg-green-700 transition block mx-auto">OK</button>
+    </div>
+  </div>
+
   <script>
     const showSignUp = document.getElementById('showSignUp');
     const showSignIn = document.getElementById('showSignIn');
     const signUpForm = document.getElementById('signUpForm');
     const signInForm = document.getElementById('signInForm');
+
+    // Modal Elements
+    const modal = document.getElementById('modal');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+    // Function to show modal with message
+    function showModal(message, callback) {
+      modalMessage.textContent = message;
+      modal.classList.remove('hidden');
+      modalCloseBtn.focus();
+
+      function onClose() {
+        modal.classList.add('hidden');
+        modalCloseBtn.removeEventListener('click', onClose);
+        if (callback) callback();
+      }
+
+      modalCloseBtn.addEventListener('click', onClose);
+    }
 
     // Switch Tabs
     showSignUp.addEventListener('click', () => {
@@ -82,20 +109,20 @@
       const emailExists = users.some(user => user.email === email);
 
       if (emailExists) {
-        alert("This email is already registered. Please sign in.");
+        showModal("This email is already registered. Please sign in.");
         return;
       }
 
       users.push({ name, email, password });
       localStorage.setItem('novaUsers', JSON.stringify(users));
-      alert("Sign up successful! Please sign in.");
-
-      // Switch to Sign In tab
-      signInForm.classList.remove('hidden');
-      signUpForm.classList.add('hidden');
-      showSignIn.classList.add('text-green-600', 'font-semibold', 'border-b-2', 'border-green-600');
-      showSignUp.classList.remove('text-green-600', 'font-semibold', 'border-b-2', 'border-green-600');
-      showSignUp.classList.add('text-gray-500');
+      showModal("Sign up successful! Please sign in.", () => {
+        // Switch to Sign In tab after modal closes
+        signInForm.classList.remove('hidden');
+        signUpForm.classList.add('hidden');
+        showSignIn.classList.add('text-green-600', 'font-semibold', 'border-b-2', 'border-green-600');
+        showSignUp.classList.remove('text-green-600', 'font-semibold', 'border-b-2', 'border-green-600');
+        showSignUp.classList.add('text-gray-500');
+      });
     });
 
     // SIGN IN Logic
@@ -111,7 +138,7 @@
         localStorage.setItem('novaLoggedIn', JSON.stringify(matchedUser));
         window.location.href = 'listing.html';
       } else {
-        alert("Invalid email or password. Please try again.");
+        showModal("Invalid email or password. Please try again.");
       }
     });
   </script>
