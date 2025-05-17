@@ -38,6 +38,7 @@
     const signUpForm = document.getElementById('signUpForm');
     const signInForm = document.getElementById('signInForm');
 
+    // Switch Tabs
     showSignUp.addEventListener('click', () => {
       signUpForm.classList.remove('hidden');
       signInForm.classList.add('hidden');
@@ -52,26 +53,47 @@
       showSignUp.classList.remove('text-green-600');
     });
 
+    // SIGN UP Logic
     signUpForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const name = document.getElementById('signupName').value;
-      const email = document.getElementById('signupEmail').value;
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
       const password = document.getElementById('signupPassword').value;
 
-      localStorage.setItem('novaUser', JSON.stringify({ name, email, password }));
-      window.location.href = 'listing.html';
+      let users = JSON.parse(localStorage.getItem('novaUsers')) || [];
+
+      const emailExists = users.some(user => user.email === email);
+
+      if (emailExists) {
+        alert("This email is already registered. Please sign in.");
+        return;
+      }
+
+      users.push({ name, email, password });
+      localStorage.setItem('novaUsers', JSON.stringify(users));
+      alert("Sign up successful! Please sign in.");
+      
+      // Switch to Sign In tab
+      signInForm.classList.remove('hidden');
+      signUpForm.classList.add('hidden');
+      showSignIn.classList.add('text-green-600');
+      showSignUp.classList.remove('text-green-600');
     });
 
+    // SIGN IN Logic
     signInForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const email = document.getElementById('signinEmail').value;
+      const email = document.getElementById('signinEmail').value.trim();
       const password = document.getElementById('signinPassword').value;
-      const user = JSON.parse(localStorage.getItem('novaUser'));
 
-      if (user && user.email === email && user.password === password) {
+      const users = JSON.parse(localStorage.getItem('novaUsers')) || [];
+      const matchedUser = users.find(user => user.email === email && user.password === password);
+
+      if (matchedUser) {
+        localStorage.setItem('novaLoggedIn', JSON.stringify(matchedUser));
         window.location.href = 'listing.html';
       } else {
-        alert('Invalid email or password!');
+        alert("Invalid email or password. Please try again.");
       }
     });
   </script>
