@@ -1,407 +1,478 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Nova Stays KE - Book Apartment</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    /* Modal backdrop */
-    .modal-backdrop-custom {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-    .modal-backdrop-custom.active {
-      display: flex;
-    }
-    .modal-content-custom {
-      background: white;
-      border-radius: 0.5rem;
-      padding: 1.5rem;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-      position: relative;
-    }
-    .modal-close-btn {
-      position: absolute;
-      top: 0.5rem; right: 0.5rem;
-      background: transparent;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: #4ade80; /* green-400 */
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Booking Confirmation - Opal Stays Kilimani</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 10px; background: #f9f9f9; }
+  h1, h2 { text-align: center; color: #2a9d8f; }
+  label { display: block; margin-top: 15px; font-weight: bold; }
+  input, select, button { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; font-size: 16px; }
+  input[readonly] { background: #eee; }
+  button { background-color: #2a9d8f; border: none; color: white; cursor: pointer; border-radius: 4px; }
+  button:hover { background-color: #21867a; }
+  .payment-methods { margin-top: 10px; display: flex; gap: 10px; justify-content: space-between; }
+  .payment-methods button { flex: 1; }
+  .summary { margin-top: 20px; font-size: 18px; font-weight: bold; color: #264653; text-align: center; }
+  .modal {
+    display: none;
+    position: fixed; z-index: 1000; left: 0; top: 0;
+    width: 100%; height: 100%;
+    overflow: auto; background-color: rgba(0,0,0,0.5);
+  }
+  .modal-content {
+    background-color: #fff; margin: 10% auto; padding: 20px;
+    border-radius: 8px; max-width: 400px; position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  .modal h3 { margin-top: 0; }
+  .modal-close-btn {
+    position: absolute; right: 10px; top: 10px;
+    background: transparent; border: none; font-size: 20px; cursor: pointer; color: #999;
+  }
+  .modal-close-btn:hover { color: #333; }
+  #thankYou { display: none; margin-top: 30px; background: #e0f7f5; border-radius: 6px; padding: 20px; }
+</style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body>
 
-<header class="bg-white shadow p-4 flex justify-between items-center">
-  <h1 class="text-xl font-bold text-green-600">Nova Stays KE - Booking</h1>
-</header>
+<h1>Opal Stays Kilimani</h1>
+<h2>Booking Confirmation</h2>
 
-<main class="max-w-xl mx-auto mt-8 p-6 bg-white rounded-md shadow-md">
-  <div id="bookingSummary" class="mb-4 text-sm text-gray-700"></div>
+<div>
+  <p><strong>Listing:</strong> <span id="listingName">Loading...</span></p>
+  <p><strong>Location:</strong> <span id="listingLocation">Loading...</span></p>
+  <p><strong>Price per night:</strong> $<span id="listingPrice">0.00</span></p>
+</div>
 
-  <form id="bookingForm" class="space-y-4">
-    <div>
-      <label for="name" class="block mb-1 font-medium">Full Name</label>
-      <input type="text" id="name" name="name" required class="w-full border border-gray-300 rounded px-3 py-2" readonly />
-    </div>
+<form id="bookingForm" novalidate>
+  <label for="name">Your Name</label>
+  <input type="text" id="name" name="name" readonly />
 
-    <div>
-      <label for="email" class="block mb-1 font-medium">Email Address</label>
-      <input type="email" id="email" name="email" required class="w-full border border-gray-300 rounded px-3 py-2" readonly />
-    </div>
+  <label for="email">Your Email</label>
+  <input type="email" id="email" name="email" readonly />
 
-    <div>
-      <label for="checkin" class="block mb-1 font-medium">Check-in Date</label>
-      <input type="date" id="checkin" name="checkin" required class="w-full border border-gray-300 rounded px-3 py-2" />
-    </div>
+  <label for="checkin">Check-in Date</label>
+  <input type="date" id="checkin" name="checkin" required />
 
-    <div>
-      <label for="checkout" class="block mb-1 font-medium">Check-out Date</label>
-      <input type="date" id="checkout" name="checkout" required class="w-full border border-gray-300 rounded px-3 py-2" />
-    </div>
+  <label for="checkout">Check-out Date</label>
+  <input type="date" id="checkout" name="checkout" required />
 
-    <div>
-      <label for="guests" class="block mb-1 font-medium">Guests</label>
-      <input type="number" id="guests" name="guests" min="1" value="1" required class="w-full border border-gray-300 rounded px-3 py-2" />
-    </div>
+  <label for="guests">Number of Guests</label>
+  <input type="number" id="guests" name="guests" min="1" value="1" required />
 
-    <!-- Total Price Display -->
-    <div>
-      <label class="block mb-1 font-medium">Total Price</label>
-      <p id="totalPrice" class="text-green-600 font-bold text-lg">USD 0</p>
-    </div>
-
-    <div>
-      <label class="block mb-1 font-medium">Payment Method</label>
-      <div class="flex gap-4">
-        <button type="button" id="btnStripe" class="flex items-center gap-2 border p-2 rounded cursor-pointer hover:bg-green-100">
-          <img src="https://cdn-icons-png.flaticon.com/512/5968/5968773.png" alt="Stripe" width="30" /> Stripe
-        </button>
-        <button type="button" id="btnPaypal" class="flex items-center gap-2 border p-2 rounded cursor-pointer hover:bg-green-100">
-          <img src="https://cdn-icons-png.flaticon.com/512/174/174861.png" alt="PayPal" width="30" /> PayPal
-        </button>
-        <button type="button" id="btnMpesa" class="flex items-center gap-2 border p-2 rounded cursor-pointer hover:bg-green-100">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/M-PESA_Logo.png" alt="MPESA" width="40" /> MPESA
-        </button>
-        <button type="button" id="btnAirtel" class="flex items-center gap-2 border p-2 rounded cursor-pointer hover:bg-green-100">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/3/31/Airtel_logo.svg" alt="Airtel Money" width="40" /> Airtel Money
-        </button>
-      </div>
-    </div>
-
-    <button type="submit" id="confirmBookingBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md font-semibold">Confirm Booking</button>
-  </form>
-
-  <div id="confirmationMessage" class="hidden mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
-    <h2 class="text-lg font-semibold mb-2">Booking Confirmed!</h2>
-    <p id="thankYouText">Thank you for booking with Nova Stays KE. We will contact you shortly via email.</p>
-    <button onclick="window.location.href='listing.html'" class="mt-4 bg-green-600 hover:bg-green-700 text-white py-1.5 px-4 rounded-md">Back to Listings</button>
+  <div class="summary">
+    Total Price: $<span id="totalPrice">0.00</span>
   </div>
-</main>
+
+  <label>Choose Payment Method</label>
+  <div class="payment-methods">
+    <button type="button" data-method="Stripe">Stripe</button>
+    <button type="button" data-method="PayPal">PayPal</button>
+    <button type="button" data-method="MPESA">MPESA</button>
+    <button type="button" data-method="Airtel Money">Airtel Money</button>
+  </div>
+
+  <input type="hidden" id="selectedPaymentMethod" name="paymentMethod" required />
+
+  <button type="submit" style="margin-top:20px;">Confirm Booking</button>
+</form>
+
+<div id="thankYou"></div>
 
 <!-- Modals -->
 
 <!-- Stripe Card Details Modal -->
-<div id="modalStripeCard" class="modal-backdrop-custom">
-  <div class="modal-content-custom">
-    <button class="modal-close-btn" data-close="modalStripeCard">&times;</button>
-    <h3 class="text-lg font-semibold mb-3 text-green-600">Enter Card Details</h3>
-    <form id="stripeCardForm" class="space-y-3">
-      <div>
-        <label for="cardNumber" class="block font-medium mb-1">Card Number</label>
-        <input type="text" id="cardNumber" name="cardNumber" maxlength="19" placeholder="1234 5678 9012 3456" required class="w-full border rounded px-3 py-2" />
-      </div>
-      <div>
-        <label for="cardExpiry" class="block font-medium mb-1">Expiry (MM/YY)</label>
-        <input type="text" id="cardExpiry" name="cardExpiry" maxlength="5" placeholder="MM/YY" required class="w-full border rounded px-3 py-2" />
-      </div>
-      <div>
-        <label for="cardCVC" class="block font-medium mb-1">CVC</label>
-        <input type="text" id="cardCVC" name="cardCVC" maxlength="4" placeholder="123" required class="w-full border rounded px-3 py-2" />
-      </div>
-      <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md font-semibold">Pay</button>
-    </form>
-  </div>
-</div>
-
-<!-- Code Verification Modal -->
-<div id="modalCodeVerification" class="modal-backdrop-custom">
-  <div class="modal-content-custom">
-    <button class="modal-close-btn" data-close="modalCodeVerification">&times;</button>
-    <h3 class="text-lg font-semibold mb-3 text-green-600">Enter Verification Code</h3>
-    <form id="codeVerificationForm" class="space-y-3">
-      <p>A verification code has been sent to your email. Please enter it below to confirm your payment.</p>
-      <input type="text" id="verificationCodeInput" maxlength="10" placeholder="Enter code" required class="w-full border rounded px-3 py-2" />
-      <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md font-semibold">Confirm</button>
+<div id="modalStripeCard" class="modal" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="stripeCardTitle">
+    <button class="modal-close-btn" data-close="modalStripeCard" aria-label="Close">&times;</button>
+    <h3 id="stripeCardTitle">Enter Card Details</h3>
+    <form id="stripeCardForm" novalidate>
+      <label for="cardNumber">Card Number</label>
+      <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" required minlength="13" maxlength="19" pattern="\\d{13,19}" inputmode="numeric" />
+      <label for="cardExpiry">Expiry (MM/YY)</label>
+      <input type="text" id="cardExpiry" name="cardExpiry" placeholder="MM/YY" pattern="^(0[1-9]|1[0-2])\\/([0-9]{2})$" required />
+      <label for="cardCVC">CVC</label>
+      <input type="text" id="cardCVC" name="cardCVC" placeholder="123" pattern="\\d{3,4}" required inputmode="numeric" />
+      <button type="submit" style="margin-top:15px;">Pay</button>
     </form>
   </div>
 </div>
 
 <!-- MPESA Payment Instructions Modal -->
-<div id="modalMpesaInstructions" class="modal-backdrop-custom">
-  <div class="modal-content-custom">
-    <button class="modal-close-btn" data-close="modalMpesaInstructions">&times;</button>
-    <h3 class="text-lg font-semibold mb-3 text-green-600">MPESA Payment Instructions</h3>
-    <p>Please pay to our till number <strong>0000</strong> using MPESA.</p>
-    <button id="mpesaPaidBtn" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md font-semibold">I Have Paid</button>
+<div id="modalMpesaInstructions" class="modal" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="mpesaInstructionsTitle">
+    <button class="modal-close-btn" data-close="modalMpesaInstructions" aria-label="Close">&times;</button>
+    <h3 id="mpesaInstructionsTitle">MPESA Payment Instructions</h3>
+    <p>Please pay <strong>$<span id="mpesaAmount"></span></strong> to <strong>MPESA Paybill: 123456</strong>, Account: <strong>OpalStays</strong>.</p>
+    <button id="mpesaPaidBtn" style="margin-top:15px;">I Have Paid</button>
   </div>
 </div>
 
 <!-- MPESA Transaction ID Input Modal -->
-<div id="modalMpesaTransaction" class="modal-backdrop-custom">
-  <div class="modal-content-custom">
-    <button class="modal-close-btn" data-close="modalMpesaTransaction">&times;</button>
-    <h3 class="text-lg font-semibold mb-3 text-green-600">Enter MPESA Transaction ID</h3>
-    <form id="mpesaTransactionForm" class="space-y-3">
-      <input type="text" id="mpesaTransactionId" maxlength="20" placeholder="Enter MPESA transaction ID" required class="w-full border rounded px-3 py-2" />
-      <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md font-semibold">Submit</button>
+<div id="modalMpesaTransaction" class="modal" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="mpesaTransactionTitle">
+    <button class="modal-close-btn" data-close="modalMpesaTransaction" aria-label="Close">&times;</button>
+    <h3 id="mpesaTransactionTitle">Enter MPESA Transaction ID</h3>
+    <form id="mpesaTransactionForm" novalidate>
+      <input type="text" id="mpesaTransactionId" name="mpesaTransactionId" placeholder="e.g. 1234" required />
+      <button type="submit" style="margin-top:15px;">Submit</button>
     </form>
   </div>
 </div>
 
-<!-- Airtel Money Payment Instructions Modal -->
-<div id="modalAirtelInstructions" class="modal-backdrop-custom">
-  <div class="modal-content-custom">
-    <button class="modal-close-btn" data-close="modalAirtelInstructions">&times;</button>
-    <h3 class="text-lg font-semibold mb-3 text-green-600">Airtel Money Payment Instructions</h3>
-    <p>Please pay to our till number <strong>0000</strong> using Airtel Money.</p>
-    <button id="airtelPaidBtn" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md font-semibold">I Have Paid</button>
+<!-- Airtel Payment Instructions Modal -->
+<div id="modalAirtelInstructions" class="modal" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="airtelInstructionsTitle">
+    <button class="modal-close-btn" data-close="modalAirtelInstructions" aria-label="Close">&times;</button>
+    <h3 id="airtelInstructionsTitle">Airtel Money Payment Instructions</h3>
+    <p>Please pay <strong>$<span id="airtelAmount"></span></strong> to <strong>Airtel Money Paybill: 654321</strong>, Account: <strong>OpalStays</strong>.</p>
+    <button id="airtelPaidBtn" style="margin-top:15px;">I Have Paid</button>
   </div>
 </div>
 
-<!-- Airtel Money Transaction ID Input Modal -->
-<div id="modalAirtelTransaction" class="modal-backdrop-custom">
-  <div class="modal-content-custom">
-    <button class="modal-close-btn" data-close="modalAirtelTransaction">&times;</button>
-    <h3 class="text-lg font-semibold mb-3 text-green-600">Enter Airtel Money Transaction ID</h3>
-    <form id="airtelTransactionForm" class="space-y-3">
-      <input type="text" id="airtelTransactionId" maxlength="20" placeholder="Enter Airtel Money transaction ID" required class="w-full border rounded px-3 py-2" />
-      <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md font-semibold">Submit</button>
+<!-- Airtel Transaction ID Input Modal -->
+<div id="modalAirtelTransaction" class="modal" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="airtelTransactionTitle">
+    <button class="modal-close-btn" data-close="modalAirtelTransaction" aria-label="Close">&times;</button>
+    <h3 id="airtelTransactionTitle">Enter Airtel Money Transaction ID</h3>
+    <form id="airtelTransactionForm" novalidate>
+      <input type="text" id="airtelTransactionId" name="airtelTransactionId" placeholder="e.g. 1234" required />
+      <button type="submit" style="margin-top:15px;">Submit</button>
+    </form>
+  </div>
+</div>
+
+<!-- Verification Code Modal -->
+<div id="modalVerification" class="modal" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="verificationTitle">
+    <button class="modal-close-btn" data-close="modalVerification" aria-label="Close">&times;</button>
+    <h3 id="verificationTitle">Enter Verification Code</h3>
+    <form id="verificationForm" novalidate>
+      <input type="text" id="verificationCode" name="verificationCode" placeholder="Enter code" required />
+      <button type="submit" style="margin-top:15px;">Verify</button>
     </form>
   </div>
 </div>
 
 <!-- Error Modal -->
-<div id="modalError" class="modal-backdrop-custom">
-  <div class="modal-content-custom">
-    <button class="modal-close-btn" data-close="modalError">&times;</button>
-    <h3 class="text-lg font-semibold mb-3 text-red-600">Error</h3>
-    <p id="errorText" class="mb-4"></p>
-    <button id="errorOkBtn" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-md font-semibold">OK</button>
+<div id="modalError" class="modal" aria-hidden="true">
+  <div class="modal-content" role="alertdialog" aria-modal="true" aria-labelledby="errorTitle">
+    <button class="modal-close-btn" data-close="modalError" aria-label="Close">&times;</button>
+    <h3 id="errorTitle">Error</h3>
+    <p id="errorMessage">An error occurred.</p>
   </div>
 </div>
 
 <script>
-  // Utilities for modal open/close
-  function openModal(id) {
-    document.getElementById(id).classList.add('active');
-  }
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('active');
-  }
-  document.querySelectorAll('.modal-close-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      closeModal(btn.getAttribute('data-close'));
+(() => {
+  // Helper to get query params
+  function getQueryParams() {
+    const params = {};
+    location.search.slice(1).split('&').forEach(pair => {
+      if (!pair) return;
+      const [key, val] = pair.split('=');
+      params[decodeURIComponent(key)] = decodeURIComponent(val || '');
     });
-  });
-
-  // Error modal helper
-  function showError(message) {
-    document.getElementById('errorText').textContent = message;
-    openModal('modalError');
+    return params;
   }
-  document.getElementById('errorOkBtn').addEventListener('click', () => {
-    closeModal('modalError');
-  });
 
-  // Initial setup: populate read-only user info (simulate logged in user)
-  const userData = {
-    name: "John Doe",
-    email: "john.doe@example.com"
-  };
-  document.getElementById('name').value = userData.name;
-  document.getElementById('email').value = userData.email;
-
-  // Booking price per night
-  const pricePerNight = 75;
-
-  const bookingForm = document.getElementById('bookingForm');
+  // Elements references
+  const listingNameEl = document.getElementById('listingName');
+  const listingLocationEl = document.getElementById('listingLocation');
+  const listingPriceEl = document.getElementById('listingPrice');
+  const nameInput = document.getElementById('name');
+  const emailInput = document.getElementById('email');
+  const checkinInput = document.getElementById('checkin');
+  const checkoutInput = document.getElementById('checkout');
+  const guestsInput = document.getElementById('guests');
   const totalPriceEl = document.getElementById('totalPrice');
-  const bookingSummaryEl = document.getElementById('bookingSummary');
-  const confirmBookingBtn = document.getElementById('confirmBookingBtn');
+  const paymentButtons = document.querySelectorAll('.payment-methods button');
+  const selectedPaymentMethodInput = document.getElementById('selectedPaymentMethod');
+  const bookingForm = document.getElementById('bookingForm');
+  const thankYouDiv = document.getElementById('thankYou');
 
-  let selectedPaymentMethod = null;
-
-  // Payment method buttons
-  const btnStripe = document.getElementById('btnStripe');
-  const btnPaypal = document.getElementById('btnPaypal');
-  const btnMpesa = document.getElementById('btnMpesa');
-  const btnAirtel = document.getElementById('btnAirtel');
-
-  // Reset selection UI
-  function resetPaymentSelection() {
-    [btnStripe, btnPaypal, btnMpesa, btnAirtel].forEach(btn => btn.classList.remove('bg-green-200'));
-  }
-  function selectPaymentMethod(btn, method) {
-    resetPaymentSelection();
-    btn.classList.add('bg-green-200');
-    selectedPaymentMethod = method;
-  }
-
-  btnStripe.addEventListener('click', () => selectPaymentMethod(btnStripe, 'stripe'));
-  btnPaypal.addEventListener('click', () => selectPaymentMethod(btnPaypal, 'paypal'));
-  btnMpesa.addEventListener('click', () => selectPaymentMethod(btnMpesa, 'mpesa'));
-  btnAirtel.addEventListener('click', () => selectPaymentMethod(btnAirtel, 'airtel'));
-
-  // Calculate total price on date or guest change
-  function calculateTotal() {
-    const checkin = bookingForm.checkin.value;
-    const checkout = bookingForm.checkout.value;
-    const guests = +bookingForm.guests.value;
-
-    if (!checkin || !checkout) {
-      totalPriceEl.textContent = "USD 0";
-      return 0;
-    }
-
-    const inDate = new Date(checkin);
-    const outDate = new Date(checkout);
-    if (outDate <= inDate) {
-      totalPriceEl.textContent = "Invalid Dates";
-      return 0;
-    }
-
-    const diffTime = outDate - inDate;
-    const diffDays = diffTime / (1000 * 60 * 60 * 24);
-    // Price formula could multiply by guests if needed
-    const total = diffDays * pricePerNight;
-    totalPriceEl.textContent = `USD ${total.toFixed(2)}`;
-    return total;
-  }
-
-  bookingForm.checkin.addEventListener('change', calculateTotal);
-  bookingForm.checkout.addEventListener('change', calculateTotal);
-  bookingForm.guests.addEventListener('input', calculateTotal);
-
-  // Modal Elements
+  // Modals
   const modalStripeCard = document.getElementById('modalStripeCard');
-  const modalCodeVerification = document.getElementById('modalCodeVerification');
   const modalMpesaInstructions = document.getElementById('modalMpesaInstructions');
   const modalMpesaTransaction = document.getElementById('modalMpesaTransaction');
   const modalAirtelInstructions = document.getElementById('modalAirtelInstructions');
   const modalAirtelTransaction = document.getElementById('modalAirtelTransaction');
+  const modalVerification = document.getElementById('modalVerification');
+  const modalError = document.getElementById('modalError');
+  const errorMessageEl = document.getElementById('errorMessage');
 
-  // Stripe Card Form Submit
-  document.getElementById('stripeCardForm').addEventListener('submit', function(e){
-    e.preventDefault();
-    // You can add card validation here
-    closeModal('modalStripeCard');
-    openModal('modalCodeVerification');
-  });
+  // Forms inside modals
+  const stripeCardForm = document.getElementById('stripeCardForm');
+  const mpesaTransactionForm = document.getElementById('mpesaTransactionForm');
+  const airtelTransactionForm = document.getElementById('airtelTransactionForm');
+  const verificationForm = document.getElementById('verificationForm');
 
-  // MPESA Paid Button Click
-  document.getElementById('mpesaPaidBtn').addEventListener('click', () => {
-    closeModal('modalMpesaInstructions');
-    openModal('modalMpesaTransaction');
-  });
+  // Payment instructions amount spans
+  const mpesaAmountSpan = document.getElementById('mpesaAmount');
+  const airtelAmountSpan = document.getElementById('airtelAmount');
 
-  // MPESA Transaction Form Submit
-  document.getElementById('mpesaTransactionForm').addEventListener('submit', function(e){
-    e.preventDefault();
-    const txId = document.getElementById('mpesaTransactionId').value.trim();
-    if (txId === '1234') {
-      closeModal('modalMpesaTransaction');
-      openModal('modalCodeVerification');
-    } else {
-      showError('MPESA transaction ID is incorrect. Please try again.');
-    }
-  });
+  // Hardcoded verification code
+  const VERIFICATION_CODE = '1234';
 
-  // Airtel Paid Button Click
-  document.getElementById('airtelPaidBtn').addEventListener('click', () => {
-    closeModal('modalAirtelInstructions');
-    openModal('modalAirtelTransaction');
-  });
+  // Variables to hold booking info
+  let listingName = '';
+  let listingLocation = '';
+  let pricePerNight = 0;
+  let totalPrice = 0;
+  let selectedPaymentMethod = '';
 
-  // Airtel Transaction Form Submit
-  document.getElementById('airtelTransactionForm').addEventListener('submit', function(e){
-    e.preventDefault();
-    const txId = document.getElementById('airtelTransactionId').value.trim();
-    if (txId === '1234') {
-      closeModal('modalAirtelTransaction');
-      openModal('modalCodeVerification');
-    } else {
-      showError('Airtel Money transaction ID is incorrect. Please try again.');
-    }
-  });
+  // --- Initialize page ---
+  function init() {
+    const params = getQueryParams();
 
-  // Code Verification Form Submit
-  document.getElementById('codeVerificationForm').addEventListener('submit', function(e){
-    e.preventDefault();
-    const code = document.getElementById('verificationCodeInput').value.trim();
-    // The correct code is hardcoded as "1234"
-    if (code === '1234') {
-      closeModal('modalCodeVerification');
-      // Show confirmation message
-      bookingForm.classList.add('hidden');
-      document.getElementById('confirmationMessage').classList.remove('hidden');
-      bookingSummaryEl.textContent = '';
-    } else {
-      showError('Verification code is incorrect. Please try again.');
-    }
-  });
+    // Fetch listing info: from URL params or sessionStorage fallback
+    listingName = params.listingName || sessionStorage.getItem('listingName') || 'Opal Stays Kilimani';
+    listingLocation = params.location || sessionStorage.getItem('location') || 'Kilimani, Nairobi';
+    pricePerNight = parseFloat(params.price) || parseFloat(sessionStorage.getItem('pricePerNight')) || 80.00;
 
-  // Confirm Booking Button Handler
-  bookingForm.addEventListener('submit', function(e){
-    e.preventDefault();
-    // Validate dates
-    const checkin = bookingForm.checkin.value;
-    const checkout = bookingForm.checkout.value;
-    if (!checkin || !checkout || new Date(checkout) <= new Date(checkin)) {
-      alert('Please select valid check-in and check-out dates.');
+    // Save back to sessionStorage for persistence in case user refreshes page
+    sessionStorage.setItem('listingName', listingName);
+    sessionStorage.setItem('location', listingLocation);
+    sessionStorage.setItem('pricePerNight', pricePerNight);
+
+    listingNameEl.textContent = listingName;
+    listingLocationEl.textContent = listingLocation;
+    listingPriceEl.textContent = pricePerNight.toFixed(2);
+
+    // Fetch user name & email from URL or sessionStorage
+    const userName = params.name || sessionStorage.getItem('userName') || 'Guest User';
+    const userEmail = params.email || sessionStorage.getItem('userEmail') || 'guest@example.com';
+
+    nameInput.value = userName;
+    emailInput.value = userEmail;
+
+    // Save user info too in sessionStorage
+    sessionStorage.setItem('userName', userName);
+    sessionStorage.setItem('userEmail', userEmail);
+
+    // Setup event listeners
+    checkinInput.addEventListener('change', updateTotalPrice);
+    checkoutInput.addEventListener('change', updateTotalPrice);
+    guestsInput.addEventListener('input', () => {
+      if (guestsInput.value < 1) guestsInput.value = 1;
+    });
+
+    paymentButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        paymentButtons.forEach(b => b.style.backgroundColor = '#2a9d8f');
+        btn.style.backgroundColor = '#1b655c';
+        selectedPaymentMethod = btn.dataset.method;
+        selectedPaymentMethodInput.value = selectedPaymentMethod;
+      });
+    });
+
+    // Modal close buttons
+    document.querySelectorAll('.modal-close-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        closeModal(btn.dataset.close);
+      });
+    });
+
+    // MPESA & Airtel Paid buttons
+    document.getElementById('mpesaPaidBtn').addEventListener('click', () => {
+      closeModal('modalMpesaInstructions');
+      openModal('modalMpesaTransaction');
+    });
+    document.getElementById('airtelPaidBtn').addEventListener('click', () => {
+      closeModal('modalAirtelInstructions');
+      openModal('modalAirtelTransaction');
+    });
+
+    // Form submissions in modals
+    stripeCardForm.addEventListener('submit', handleStripePayment);
+    mpesaTransactionForm.addEventListener('submit', handleMpesaTransaction);
+    airtelTransactionForm.addEventListener('submit', handleAirtelTransaction);
+    verificationForm.addEventListener('submit', handleVerification);
+
+    // Booking form submit
+    bookingForm.addEventListener('submit', handleBookingSubmit);
+
+    updateTotalPrice();
+  }
+
+  function updateTotalPrice() {
+    const checkin = checkinInput.value;
+    const checkout = checkoutInput.value;
+
+    if (!checkin || !checkout) {
+      totalPriceEl.textContent = '0.00';
+      totalPrice = 0;
       return;
     }
+    const checkinDate = new Date(checkin);
+    const checkoutDate = new Date(checkout);
+
+    if (checkoutDate <= checkinDate) {
+      totalPriceEl.textContent = '0.00';
+      totalPrice = 0;
+      return;
+    }
+
+    // Calculate nights
+    const msPerDay = 1000 * 60 * 60 * 24;
+    const nights = Math.round((checkoutDate - checkinDate) / msPerDay);
+
+    totalPrice = nights * pricePerNight;
+    totalPriceEl.textContent = totalPrice.toFixed(2);
+
+    // Update payment instructions amount spans too
+    mpesaAmountSpan.textContent = totalPrice.toFixed(2);
+    airtelAmountSpan.textContent = totalPrice.toFixed(2);
+  }
+
+  // Open modal helper
+  function openModal(id) {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.style.display = 'block';
+    modal.setAttribute('aria-hidden', 'false');
+    // Focus first input or button
+    const focusElem = modal.querySelector('input, button');
+    if (focusElem) focusElem.focus();
+  }
+
+  // Close modal helper
+  function closeModal(id) {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  // Show error modal with message
+  function showError(message) {
+    errorMessageEl.textContent = message;
+    openModal('modalError');
+  }
+
+  // Booking form submission handler
+  function handleBookingSubmit(e) {
+    e.preventDefault();
     if (!selectedPaymentMethod) {
-      alert('Please select a payment method.');
+      showError('Please select a payment method.');
+      return;
+    }
+    if (!checkinInput.value || !checkoutInput.value) {
+      showError('Please select valid check-in and check-out dates.');
+      return;
+    }
+    if (totalPrice <= 0) {
+      showError('Total price must be greater than zero.');
       return;
     }
 
-    // Show booking summary
-    const guests = bookingForm.guests.value;
-    const totalPrice = calculateTotal();
-    bookingSummaryEl.textContent = `Booking Summary: ${guests} guest(s), from ${checkin} to ${checkout}, Total: USD ${totalPrice.toFixed(2)}`;
-
-    // Payment flows
-    switch(selectedPaymentMethod) {
-      case 'stripe':
+    switch (selectedPaymentMethod) {
+      case 'Stripe':
+      case 'PayPal':
+        // For demo, treat Stripe and PayPal same way: show card input modal
         openModal('modalStripeCard');
         break;
-      case 'paypal':
-        // For PayPal, skip card form, go directly to code verification (or implement PayPal flow)
-        openModal('modalCodeVerification');
-        break;
-      case 'mpesa':
+      case 'MPESA':
         openModal('modalMpesaInstructions');
         break;
-      case 'airtel':
+      case 'Airtel Money':
         openModal('modalAirtelInstructions');
         break;
       default:
-        alert('Invalid payment method selected.');
+        showError('Invalid payment method selected.');
     }
-  });
+  }
 
+  // Handle Stripe card payment submission (mock)
+  function handleStripePayment(e) {
+    e.preventDefault();
+    // Validate basic inputs (simplified)
+    const cardNumber = stripeCardForm.cardNumber.value.trim();
+    const cardExpiry = stripeCardForm.cardExpiry.value.trim();
+    const cardCVC = stripeCardForm.cardCVC.value.trim();
+
+    if (!/^\d{13,19}$/.test(cardNumber.replace(/\s+/g, ''))) {
+      showError('Please enter a valid card number (13-19 digits).');
+      return;
+    }
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(cardExpiry)) {
+      showError('Please enter a valid expiry date in MM/YY format.');
+      return;
+    }
+    if (!/^\d{3,4}$/.test(cardCVC)) {
+      showError('Please enter a valid CVC code (3 or 4 digits).');
+      return;
+    }
+
+    closeModal('modalStripeCard');
+    openModal('modalVerification');
+  }
+
+  // Handle MPESA transaction ID submission
+  function handleMpesaTransaction(e) {
+    e.preventDefault();
+    const txId = mpesaTransactionForm.mpesaTransactionId.value.trim();
+    if (!txId) {
+      showError('Please enter the MPESA transaction ID.');
+      return;
+    }
+    // For demo, accept any non-empty txId
+    closeModal('modalMpesaTransaction');
+    openModal('modalVerification');
+  }
+
+  // Handle Airtel transaction ID submission
+  function handleAirtelTransaction(e) {
+    e.preventDefault();
+    const txId = airtelTransactionForm.airtelTransactionId.value.trim();
+    if (!txId) {
+      showError('Please enter the Airtel Money transaction ID.');
+      return;
+    }
+    // For demo, accept any non-empty txId
+    closeModal('modalAirtelTransaction');
+    openModal('modalVerification');
+  }
+
+  // Handle verification code submission
+  function handleVerification(e) {
+    e.preventDefault();
+    const code = verificationForm.verificationCode.value.trim();
+    if (code !== VERIFICATION_CODE) {
+      showError('Incorrect verification code. Please try again.');
+      return;
+    }
+    closeModal('modalVerification');
+    showThankYou();
+  }
+
+  // Show thank you message with booking details
+  function showThankYou() {
+    bookingForm.style.display = 'none';
+    thankYouDiv.style.display = 'block';
+
+    thankYouDiv.innerHTML = `
+      <h2>Thank you for your booking, ${nameInput.value}!</h2>
+      <p>Your booking details:</p>
+      <ul>
+        <li><strong>Listing:</strong> ${listingName}</li>
+        <li><strong>Location:</strong> ${listingLocation}</li>
+        <li><strong>Check-in:</strong> ${checkinInput.value}</li>
+        <li><strong>Check-out:</strong> ${checkoutInput.value}</li>
+        <li><strong>Guests:</strong> ${guestsInput.value}</li>
+        <li><strong>Total Price:</strong> $${totalPrice.toFixed(2)}</li>
+        <li><strong>Payment Method:</strong> ${selectedPaymentMethod}</li>
+      </ul>
+      <p>We will send you a confirmation email shortly.</p>
+    `;
+  }
+
+  // Initialize on page load
+  window.addEventListener('DOMContentLoaded', init);
+})();
 </script>
+
 </body>
 </html>
