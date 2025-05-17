@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nova Stays KE - Sign Up</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f9fafb;
+    }
+    header {
+      background-color: #ffffff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      loadRegisteredUsers();
+    });
+
+    let registeredUsers = {};
+
+    function loadRegisteredUsers() {
+      const users = localStorage.getItem("registeredUsers");
+      if (users) {
+        registeredUsers = JSON.parse(users);
+      }
+    }
+
+    function saveRegisteredUsers() {
+      localStorage.setItem("registeredUsers", JSON.stringify(registeredUsers));
+    }
+
+    function handleSignup(event) {
+      event.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const confirmPassword = document.getElementById('confirm-password').value.trim();
+
+      if (password !== confirmPassword) {
+        alert('Passwords do not match.');
+        return;
+      }
+
+      if (registeredUsers[email]) {
+        alert('This email is already registered.');
+        return;
+      }
+
+      registeredUsers[email] = { name, password };
+      saveRegisteredUsers();
+
+      alert('Registration successful! Redirecting to login page...');
+      window.location.href = "login.html";
+    }
+  </script>
+</head>
+<body>
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-green-600">Nova Stays KE</h1>
+    <div class="text-sm text-gray-600">
+      <a href="login.html" class="text-green-600 hover:underline">Already have an account? Log in</a>
+    </div>
+  </header>
+
+  <main class="max-w-lg mx-auto mt-10 bg-white p-8 rounded-lg shadow">
+    <h2 class="text-2xl font-bold text-green-600 mb-6">Create an Account</h2>
+    <form id="signup-form" class="space-y-4" onsubmit="handleSignup(event)">
+      <div><label class="block text-sm font-medium">Full Name</label><input id="name" type="text" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required></div>
+      <div><label class="block text-sm font-medium">Email</label><input id="email" type="email" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required></div>
+      <div><label class="block text-sm font-medium">Password</label><input id="password" type="password" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required></div>
+      <div><label class="block text-sm font-medium">Confirm Password</label><input id="confirm-password" type="password" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required></div>
+      <button type="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition">Sign Up</button>
+    </form>
+  </main>
+
+  <footer class="bg-white text-center py-4 text-gray-500 text-sm mt-10">
+    <p>&copy; 2025 Nova Stays KE. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
