@@ -2,111 +2,114 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Book Stay | Nova Stays KE</title>
+  <title>Book Apartment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet" />
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-gray-100 text-gray-800 p-6">
 
-  <!-- Header -->
-  <header class="bg-white shadow p-4 flex justify-between items-center">
-    <h1 class="text-xl font-bold text-green-600">Nova Stays KE</h1>
-    <div class="text-sm text-gray-600">
-      Booking as: <span class="font-semibold" id="userName">...</span> | <span id="userEmail">...</span>
+  <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
+    <h1 class="text-2xl font-bold mb-4">Book Your Stay</h1>
+
+    <div class="mb-4">
+      <p><strong>Name:</strong> <span id="userName">Loading...</span></p>
+      <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
     </div>
-  </header>
 
-  <!-- Booking Form -->
-  <main class="max-w-xl mx-auto bg-white shadow mt-10 p-6 rounded-md">
-    <h2 class="text-lg font-bold mb-4 text-green-700" id="listingTitle">Booking</h2>
+    <div class="mb-4">
+      <label class="block font-medium mb-1">Select Dates (Check-in & Check-out):</label>
+      <input type="text" id="datepicker" class="w-full px-4 py-2 border rounded" placeholder="Select date range" />
+    </div>
 
-    <form class="space-y-4">
-      <!-- Display Listing Info -->
-      <div class="text-sm text-gray-700">
-        <p><strong>Listing:</strong> <span id="listingName">-</span></p>
-        <p><strong>Location:</strong> <span id="listingLocation">-</span></p>
-        <p><strong>Price per Night:</strong> USD <span id="listingPrice">0</span></p>
-      </div>
+    <div class="mb-4">
+      <p><strong>Apartment:</strong> <span id="apartmentName">Modern Studio in Kilimani</span></p>
+      <p><strong>Rate:</strong> $40 / night</p>
+    </div>
 
-      <!-- Booking Inputs -->
-      <div>
-        <label class="block text-sm font-medium">Check-in Date:</label>
-        <input type="date" id="checkinDate" class="w-full mt-1 p-2 border rounded" required />
-      </div>
+    <div id="totalCost" class="font-semibold mb-4 hidden"></div>
 
-      <div>
-        <label class="block text-sm font-medium">Check-out Date:</label>
-        <input type="date" id="checkoutDate" class="w-full mt-1 p-2 border rounded" required />
-      </div>
+    <button id="bookBtn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Book Now</button>
+  </div>
 
-      <div>
-        <label class="block text-sm font-medium">Select Check-in Time:</label>
-        <input type="time" id="checkinTime" class="w-full mt-1 p-2 border rounded" required />
-      </div>
+  <!-- Modal -->
+  <div id="bookingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+    <div class="bg-white rounded-lg p-6 text-center shadow-lg w-full max-w-md">
+      <h2 class="text-xl font-bold mb-2">Confirm Your Booking</h2>
+      <p id="modalAmount" class="mb-4 text-gray-700"></p>
+      <button id="confirmBookBtn" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Confirm Booking</button>
+      <button id="closeModalBtn" class="mt-2 text-gray-500 hover:text-gray-800 block w-full">Cancel</button>
+    </div>
+  </div>
 
-      <!-- Auto Calculated -->
-      <div class="text-sm text-gray-700">
-        <p><strong>Number of Nights:</strong> <span id="nightsCount">0</span></p>
-      </div>
-
-      <!-- Total -->
-      <div class="text-green-700 font-semibold">
-        Total: USD <span id="totalAmount">0</span>
-      </div>
-
-      <!-- Confirm Button -->
-      <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded text-sm">
-        Confirm Booking
-      </button>
-    </form>
-  </main>
-
-  <!-- Script Logic -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const listing = params.get('listing') || 'N/A';
-    const price = parseFloat(params.get('price') || 0);
-    const location = params.get('location') || 'N/A';
-    const user = params.get('user') || 'Guest';
-    const email = params.get('email') || 'guest@example.com';
+    // Fetch user name and email from localStorage
+    document.getElementById("userName").textContent = localStorage.getItem("fullName") || "Not found";
+    document.getElementById("userEmail").textContent = localStorage.getItem("email") || "Not found";
 
-    document.getElementById('userName').textContent = user;
-    document.getElementById('userEmail').textContent = email;
-    document.getElementById('listingTitle').textContent = `Booking: ${listing}`;
-    document.getElementById('listingName').textContent = listing;
-    document.getElementById('listingLocation').textContent = location;
-    document.getElementById('listingPrice').textContent = price.toFixed(2);
+    flatpickr("#datepicker", {
+      mode: "range",
+      dateFormat: "Y-m-d",
+    });
 
-    const checkinInput = document.getElementById('checkinDate');
-    const checkoutInput = document.getElementById('checkoutDate');
-    const nightsOutput = document.getElementById('nightsCount');
-    const totalOutput = document.getElementById('totalAmount');
+    const nightlyRate = 40;
+    const datepicker = document.getElementById("datepicker");
+    const totalCostDiv = document.getElementById("totalCost");
+    const bookBtn = document.getElementById("bookBtn");
+    const bookingModal = document.getElementById("bookingModal");
+    const modalAmount = document.getElementById("modalAmount");
+    const confirmBookBtn = document.getElementById("confirmBookBtn");
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    const apartmentName = document.getElementById("apartmentName").textContent;
 
-    function calculateNightsAndTotal() {
-      const checkinDate = new Date(checkinInput.value);
-      const checkoutDate = new Date(checkoutInput.value);
+    let checkIn = "";
+    let checkOut = "";
+    let nights = 0;
+    let totalCost = 0;
 
-      if (!isNaN(checkinDate) && !isNaN(checkoutDate) && checkoutDate > checkinDate) {
-        const timeDiff = checkoutDate - checkinDate;
-        const nights = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-        nightsOutput.textContent = nights;
-        totalOutput.textContent = (nights * price).toFixed(2);
+    bookBtn.addEventListener("click", () => {
+      const dates = datepicker.value.split(" to ");
+      if (dates.length === 2) {
+        checkIn = dates[0];
+        checkOut = dates[1];
+        const start = new Date(checkIn);
+        const end = new Date(checkOut);
+
+        nights = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+        if (nights < 1) {
+          alert("Check-out must be at least 1 day after check-in.");
+          return;
+        }
+
+        totalCost = nights * nightlyRate;
+        totalCostDiv.textContent = `Total: $${totalCost} for ${nights} night${nights > 1 ? "s" : ""}`;
+        totalCostDiv.classList.remove("hidden");
+
+        modalAmount.textContent = `Total: $${totalCost} for ${nights} night${nights > 1 ? "s" : ""}`;
+        bookingModal.classList.remove("hidden");
+        bookingModal.classList.add("flex");
       } else {
-        nightsOutput.textContent = '0';
-        totalOutput.textContent = '0.00';
+        alert("Please select a valid check-in and check-out date.");
       }
-    }
+    });
 
-    checkinInput.addEventListener('change', calculateNightsAndTotal);
-    checkoutInput.addEventListener('change', calculateNightsAndTotal);
+    closeModalBtn.addEventListener("click", () => {
+      bookingModal.classList.add("hidden");
+      bookingModal.classList.remove("flex");
+    });
 
-    document.querySelector('form').addEventListener('submit', e => {
-      e.preventDefault();
-      const nights = parseInt(nightsOutput.textContent);
-      const total = totalOutput.textContent;
-      alert(`Booking confirmed for ${nights} night(s) at USD ${total}`);
+    confirmBookBtn.addEventListener("click", () => {
+      const params = new URLSearchParams({
+        amount: totalCost,
+        checkin: checkIn,
+        checkout: checkOut,
+        apartment: apartmentName,
+        name: localStorage.getItem("fullName") || "",
+        email: localStorage.getItem("email") || "",
+      });
+      window.location.href = "payment.html?" + params.toString();
     });
   </script>
-
 </body>
 </html>
