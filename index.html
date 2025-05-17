@@ -81,14 +81,18 @@
   <!-- Booking Page Redirect Logic -->
   <script>
     function bookNow(name, price, location) {
+      // Fetch user info from header dynamically
       const userName = document.getElementById("userName").textContent;
       const userEmail = document.getElementById("userEmail").textContent;
 
+      // Build URL query parameters to pass all required data
       const url = `book.html?listing=${encodeURIComponent(name)}&price=${price}&location=${encodeURIComponent(location)}&user=${encodeURIComponent(userName)}&email=${encodeURIComponent(userEmail)}`;
+
+      // Redirect user to book.html with data in URL
       window.location.href = url;
     }
 
-    // Carousel logic
+    // Carousel logic remains unchanged
     const images = [
       "https://source.unsplash.com/400x300/?apartment",
       "https://source.unsplash.com/400x300/?room",
