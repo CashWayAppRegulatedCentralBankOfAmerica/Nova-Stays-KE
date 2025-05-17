@@ -3,22 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nova Stays KE - Sign Up</title>
+  <title>Nova Stays KE | Login & Signup</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    body {
-      background-color: #f9fafb;
-    }
-    header {
-      background-color: #ffffff;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
+      emailjs.init("0ockMZ07aVnggqzsD");
       loadRegisteredUsers();
     });
 
+    const suspendedUsers = ["JACKREALKENYA@GMAIL.com", "suspended1@example.com", "blockeduser@example.com"];
     let registeredUsers = {};
 
     function loadRegisteredUsers() {
@@ -32,53 +26,89 @@
       localStorage.setItem("registeredUsers", JSON.stringify(registeredUsers));
     }
 
+    function toggleForm() {
+      document.getElementById('login-form').classList.toggle('hidden');
+      document.getElementById('signup-form').classList.toggle('hidden');
+      document.getElementById('modal').classList.add('hidden');
+    }
+
+    function showModal(message, redirectToLogin = false) {
+      const modal = document.getElementById('modal');
+      document.getElementById('modal-message').innerText = message;
+      modal.classList.remove('hidden');
+      if (redirectToLogin) {
+        document.getElementById('modal-ok-btn').onclick = () => {
+          modal.classList.add('hidden');
+          toggleForm();
+        };
+      } else {
+        document.getElementById('modal-ok-btn').onclick = () => modal.classList.add('hidden');
+      }
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+
+      if (suspendedUsers.includes(email)) {
+        showModal("Your account has been suspended. Please contact support.");
+        return;
+      }
+
+      if (registeredUsers[email] === password) {
+        localStorage.setItem('userName', email);
+        showModal("Login successful! Redirecting...");
+        setTimeout(() => {
+          window.location.href = "listing.html";
+        }, 1500);
+      } else {
+        showModal("Login failed. Please check your credentials.");
+      }
+    }
+
     function handleSignup(event) {
       event.preventDefault();
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const confirmPassword = document.getElementById('confirm-password').value.trim();
+      const name = document.getElementById('signup-name').value.trim();
+      const email = document.getElementById('signup-email').value.trim();
+      const password = document.getElementById('signup-password').value.trim();
+      const confirm = document.getElementById('signup-confirm-password').value.trim();
 
-      if (password !== confirmPassword) {
-        alert('Passwords do not match.');
+      if (password !== confirm) {
+        showModal("Passwords do not match.");
         return;
       }
 
       if (registeredUsers[email]) {
-        alert('This email is already registered.');
+        showModal("This email is already registered.");
         return;
       }
 
-      registeredUsers[email] = { name, password };
+      registeredUsers[email] = password;
       saveRegisteredUsers();
+      localStorage.setItem('fullName', name);
 
-      alert('Registration successful! Redirecting to login page...');
-      window.location.href = "login.html";
+      showModal("Registration successful! Please login.", true);
     }
   </script>
 </head>
-<body>
-  <header class="bg-white shadow p-4 flex justify-between items-center">
-    <h1 class="text-xl font-bold text-green-600">Nova Stays KE</h1>
-    <div class="text-sm text-gray-600">
-      <a href="login.html" class="text-green-600 hover:underline">Already have an account? Log in</a>
+<body class="bg-gray-100 text-gray-800 min-h-screen flex items-center justify-center">
+  <div class="container mx-auto px-4 py-12 max-w-md">
+    <div id="login-form" class="bg-white p-8 shadow-md rounded-lg">
+      <h2 class="text-2xl font-bold text-green-600 mb-4">Login to Nova Stays KE</h2>
+      <form class="space-y-4" onsubmit="handleLogin(event)">
+        <div>
+          <label class="block text-sm font-medium">Email</label>
+          <input id="login-email" type="email" class="w-full px-4 py-2 border rounded" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Password</label>
+          <input id="login-password" type="password" class="w-full px-4 py-2 border rounded" required>
+        </div>
+        <button type="submit" class="w-full bg-green-600 text-white py-2 rounded">Login</button>
+      </form>
+      <p class="text-sm mt-4 text-center">Don't have an account? <button onclick="toggleForm()" class="text-green-600">Sign up</button></p>
     </div>
-  </header>
-
-  <main class="max-w-lg mx-auto mt-10 bg-white p-8 rounded-lg shadow">
-    <h2 class="text-2xl font-bold text-green-600 mb-6">Create an Account</h2>
-    <form id="signup-form" class="space-y-4" onsubmit="handleSignup(event)">
-      <div><label class="block text-sm font-medium">Full Name</label><input id="name" type="text" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required></div>
-      <div><label class="block text-sm font-medium">Email</label><input id="email" type="email" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required></div>
-      <div><label class="block text-sm font-medium">Password</label><input id="password" type="password" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required></div>
-      <div><label class="block text-sm font-medium">Confirm Password</label><input id="confirm-password" type="password" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required></div>
-      <button type="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition">Sign Up</button>
-    </form>
-  </main>
-
-  <footer class="bg-white text-center py-4 text-gray-500 text-sm mt-10">
-    <p>&copy; 2025 Nova Stays KE. All rights reserved.</p>
-  </footer>
-
+  </div>
 </body>
 </html>
