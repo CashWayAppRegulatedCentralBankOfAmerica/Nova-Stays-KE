@@ -80,6 +80,22 @@
 
   <!-- Booking Page Redirect Logic -->
   <script>
+    // Load user info from localStorage and update header
+    window.addEventListener('DOMContentLoaded', () => {
+      const userDataJSON = localStorage.getItem('novaStayUser');
+      if (userDataJSON) {
+        try {
+          const userData = JSON.parse(userDataJSON);
+          if(userData.name && userData.email){
+            document.getElementById('userName').textContent = userData.name;
+            document.getElementById('userEmail').textContent = userData.email;
+          }
+        } catch (e) {
+          console.error('Error parsing user data from localStorage', e);
+        }
+      }
+    });
+
     function bookNow(name, price, location) {
       // Fetch user info from header dynamically
       const userName = document.getElementById("userName").textContent;
