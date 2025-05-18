@@ -467,25 +467,32 @@
   </script>
   <script>
   function openReviewModal(el) {
-    const listingCard = el.closest(".p-3");
-    const listingName = listingCard.querySelector(".listing-name").textContent.trim();
-    const hostName = listingCard.querySelector(".listing-host").textContent.trim();
+    // Go up to the nearest listing card div
+    const card = el.closest(".p-3");
+    if (!card) return;
 
-    // Set text in review modal
+    // Extract listing name and host name
+    const listingName = card.querySelector(".listing-name")?.textContent.trim();
+    const hostName = card.querySelector(".listing-host")?.textContent.trim();
+
+    if (!listingName || !hostName) {
+      console.error("Listing name or host name not found.");
+      return;
+    }
+
+    // Fill modal content
     document.getElementById("reviewListingName").textContent = listingName;
     document.getElementById("reviewHostName").textContent = hostName;
 
-    // Show review modal
-    document.getElementById("reviewModal").classList.remove("hidden");
-
-    // Set validation modal data too
     document.getElementById("validationListingName").textContent = listingName;
     document.getElementById("validationHostName").textContent = hostName;
+
+    // Show modal
+    document.getElementById("reviewModal").classList.remove("hidden");
   }
-</script>
-  <script>
+
   function submitReview() {
-    // Show validation modal instead of saving
+    // Hide review modal and show validation modal
     document.getElementById("reviewModal").classList.add("hidden");
     document.getElementById("validationModal").classList.remove("hidden");
   }
@@ -497,6 +504,7 @@
   function closeValidationModal() {
     document.getElementById("validationModal").classList.add("hidden");
   }
+</script>
 </script>
 
 
