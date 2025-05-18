@@ -162,7 +162,8 @@
      onclick="openReviewModal(this.closest('.listing').getAttribute('data-listing'), this.closest('.listing').getAttribute('data-host'))">
   ⭐⭐⭐⭐ (18)
 </div>
-
+      
+</div>
     </div>
     <h3 class="font-semibold text-sm">Cozy Beach Villa</h3>
     <p class="text-green-600 font-bold text-sm">USD 85 / night</p>
@@ -215,9 +216,11 @@
           <p class="text-gray-500">Runda Estate</p>
         </div>
       </div>
-      <div class="text-yellow-500 text-xs cursor-pointer rating" 
+     <div class="text-yellow-500 text-xs cursor-pointer rating" 
      onclick="openReviewModal(this.closest('.listing').getAttribute('data-listing'), this.closest('.listing').getAttribute('data-host'))">
   ⭐⭐⭐⭐ (18)
+</div>
+
 </div>
     </div>
     <h3 class="font-semibold text-sm">Rustic Luxury</h3>
@@ -444,17 +447,16 @@
       }
     });
   </script>
-<script>
+  <script>
   let currentListing = '';
   let currentHost = '';
 
-  function openReviewModalFromElement(el) {
-    currentListing = el.getAttribute("data-listing");
-    currentHost = el.getAttribute("data-host");
-
-    document.getElementById("listingTitle").textContent = currentListing;
+  function openReviewModal(listingName, hostName) {
+    currentListing = listingName;
+    currentHost = hostName;
+    document.getElementById("listingTitle").textContent = listingName;
     document.getElementById("reviewModal").classList.remove("hidden");
-    loadReviews();
+    loadReviews(); // optional: show existing reviews
   }
 
   function closeReviewModal() {
@@ -462,10 +464,10 @@
   }
 
   function submitReview() {
-    const emailHasBooking = false; // replace this with your real logic
-
+    // Simulated email validation logic
+    const emailHasBooking = false; // change this based on your booking logic
     if (!emailHasBooking) {
-      closeReviewModal();
+      document.getElementById("reviewModal").classList.add("hidden");
       document.getElementById("validationListing").textContent = currentListing;
       document.getElementById("validationHost").textContent = currentHost;
       document.getElementById("validationModal").classList.remove("hidden");
@@ -488,8 +490,8 @@
   function loadReviews() {
     const reviewList = document.getElementById("reviewList");
     reviewList.innerHTML = `
-      <div><strong>Jane Doe:</strong> Loved it!</div>
-      <div><strong>Brian:</strong> Would book again!</div>
+      <div><strong>Jane Doe:</strong> Beautiful location and great host!</div>
+      <div><strong>Mike:</strong> Super clean and cozy, highly recommend.</div>
     `;
   }
 </script>
