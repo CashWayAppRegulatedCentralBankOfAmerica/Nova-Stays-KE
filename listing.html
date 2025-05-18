@@ -173,7 +173,15 @@
 </div>
 
     <!-- Listing 3 -->
-<div class="bg-white rounded-lg shadow-sm overflow-hidden max-w-sm mx-auto">
+<div class="bg-white rounded-lg shadow-sm overflow-hidden max-w-sm mx-auto listing"
+     data-host="Jacob Fayama"
+     data-location="Runda Estate"
+     ontouchstart="startHold(this)"
+     ontouchend="endHold()"
+     onmousedown="startHold(this)"
+     onmouseup="endHold()"
+     onmouseleave="endHold()">
+     
   <!-- Main Image -->
   <img
     id="carouselThumb3"
@@ -184,23 +192,23 @@
 
   <!-- Thumbnails -->
   <div class="flex justify-center items-center gap-2 mt-2 overflow-x-auto">
+    <!-- (Thumbnails unchanged) -->
     <img src="IMG-20250517-WA0016.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 1" onclick="document.getElementById('carouselThumb3').src=this.src" />
-    <img src="IMG-20250517-WA0010.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 2" onclick="document.getElementById('carouselThumb3').src=this.src" />
-    <img src="IMG-20250517-WA0007.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 3" onclick="document.getElementById('carouselThumb3').src=this.src" />
-    <img src="IMG-20250517-WA0012.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 4" onclick="document.getElementById('carouselThumb3').src=this.src" />
-    <img src="IMG-20250517-WA0017.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 5" onclick="document.getElementById('carouselThumb3').src=this.src" />
-    <img src="IMG-20250517-WA0014.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 6" onclick="document.getElementById('carouselThumb3').src=this.src" />
-    <img src="IMG-20250517-WA0011.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 7" onclick="document.getElementById('carouselThumb3').src=this.src" />
-    <img src="IMG-20250517-WA0013.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 8" onclick="document.getElementById('carouselThumb3').src=this.src" />
-    <img src="IMG-20250517-WA0009.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 9" onclick="document.getElementById('carouselThumb3').src=this.src" />
-    <img src="IMG-20250517-WA0018.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 10" onclick="document.getElementById('carouselThumb3').src=this.src" />
-    <img src="IMG-20250517-WA0008.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 11" onclick="document.getElementById('carouselThumb3').src=this.src" />
+<img src="IMG-20250517-WA0010.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 2" onclick="document.getElementById('carouselThumb3').src=this.src" />
+<img src="IMG-20250517-WA0007.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 3" onclick="document.getElementById('carouselThumb3').src=this.src" />
+<img src="IMG-20250517-WA0012.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 4" onclick="document.getElementById('carouselThumb3').src=this.src" />
+<img src="IMG-20250517-WA0017.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 5" onclick="document.getElementById('carouselThumb3').src=this.src" />
+<img src="IMG-20250517-WA0014.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 6" onclick="document.getElementById('carouselThumb3').src=this.src" />
+<img src="IMG-20250517-WA0011.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 7" onclick="document.getElementById('carouselThumb3').src=this.src" />
+<img src="IMG-20250517-WA0013.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 8" onclick="document.getElementById('carouselThumb3').src=this.src" />
+<img src="IMG-20250517-WA0009.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 9" onclick="document.getElementById('carouselThumb3').src=this.src" />
+<img src="IMG-20250517-WA0018.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 10" onclick="document.getElementById('carouselThumb3').src=this.src" />
+<img src="IMG-20250517-WA0008.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 11" onclick="document.getElementById('carouselThumb3').src=this.src" />
   </div>
 
   <div class="p-3">
     <div class="flex items-center justify-between mb-1">
       <div class="flex items-center gap-2">
-        <!-- Host image -->
         <img
           src="IMG-20250509-WA0010.jpg"
           class="w-7 h-7 rounded-full object-cover"
@@ -410,6 +418,26 @@
       }
     });
   </script>
+  <script>
+let holdTimer;
+
+function startHold(element) {
+  holdTimer = setTimeout(() => {
+    const host = element.getAttribute("data-host").replace(/\s+/g, '-');
+    const location = element.getAttribute("data-location").replace(/\s+/g, '-');
+    const url = `https://yourdomain.com/listing?host=${host}&location=${location}`;
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(url).then(() => {
+      alert(`Link copied: ${url}`);
+    });
+  }, 800); // Long press duration
+}
+
+function endHold() {
+  clearTimeout(holdTimer);
+}
+</script>
 
 </body>
 </html>
