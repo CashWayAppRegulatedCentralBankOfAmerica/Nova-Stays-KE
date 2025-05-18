@@ -55,9 +55,14 @@
 <nav class="flex overflow-x-auto no-scrollbar gap-3 my-4 px-2">
   <a href="#" class="bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Nairobi</a>
   <a href="#" class="bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Mombasa</a>
-  <a href="#" class="bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Zanzibar</a>
-  <a href="#" class="bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Kisumu</a>
+  <a href="#" class="bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Diani</a>
+  <a href="#" class="bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Malindi</a>
+  <a href="#" class="bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Kisumu/a>
   <a href="#" class="bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Nakuru</a>
+  <a href="#" class="bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Dar es Salaam</a>
+  <a href="#" class="bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Zanzibar</a>
+  <a href="#" class="bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Mikocheni</a>
+  <a href="#" class="bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Ngorongoro Crater</a>
 </nav>
 
   <!-- Listings Section -->
@@ -167,7 +172,7 @@
 </div>
 
     <!-- Listing 3 -->
-<div class="bg-white rounded-lg shadow-sm overflow-hidden max-w-sm mx-auto" data-location="Nairobi">
+<div class="bg-white rounded-lg shadow-sm overflow-hidden max-w-sm mx-auto">
   <!-- Main Image -->
   <img
     id="carouselThumb3"
@@ -404,37 +409,6 @@
       }
     });
   </script>
-  <script>
-  // Select the nav and listings container
-  const nav = document.querySelector('nav');
-  const listingsContainer = document.getElementById('listings'); // make sure your listings container has id="listings"
-
-  nav.addEventListener('click', e => {
-    e.preventDefault();
-    const clicked = e.target;
-    if (clicked.tagName !== 'A') return;
-
-    const location = clicked.textContent.trim();
-    const listings = Array.from(listingsContainer.children);
-
-    // Reorder listings so matching location come first
-    listings.sort((a, b) => {
-      const aLoc = a.dataset.location || '';
-      const bLoc = b.dataset.location || '';
-      return (aLoc === location ? 0 : 1) - (bLoc === location ? 0 : 1);
-    });
-
-    listings.forEach(listing => listingsContainer.appendChild(listing));
-
-    // Optional: update active link styling
-    nav.querySelectorAll('a').forEach(a => {
-      a.classList.remove('bg-green-600', 'text-white');
-      a.classList.add('bg-green-100', 'text-green-800');
-    });
-    clicked.classList.add('bg-green-600', 'text-white');
-    clicked.classList.remove('bg-green-100', 'text-green-800');
-  });
-</script>
 
 </body>
 </html>
