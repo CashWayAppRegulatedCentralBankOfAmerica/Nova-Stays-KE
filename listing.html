@@ -441,6 +441,54 @@
       }
     });
   </script>
+  <script>
+  let currentListing = '';
+  let currentHost = '';
+
+  function openReviewModal(listingName, hostName) {
+    currentListing = listingName;
+    currentHost = hostName;
+    document.getElementById("listingTitle").textContent = listingName;
+    document.getElementById("reviewModal").classList.remove("hidden");
+    loadReviews(); // optional: show existing reviews
+  }
+
+  function closeReviewModal() {
+    document.getElementById("reviewModal").classList.add("hidden");
+  }
+
+  function submitReview() {
+    // Simulated email validation logic
+    const emailHasBooking = false; // change this based on your booking logic
+    if (!emailHasBooking) {
+      document.getElementById("reviewModal").classList.add("hidden");
+      document.getElementById("validationListing").textContent = currentListing;
+      document.getElementById("validationHost").textContent = currentHost;
+      document.getElementById("validationModal").classList.remove("hidden");
+      return;
+    }
+
+    const reviewText = document.getElementById("newReview").value;
+    const reviewList = document.getElementById("reviewList");
+    const newReview = document.createElement("div");
+    newReview.innerHTML = `<strong>You:</strong> ${reviewText}`;
+    reviewList.appendChild(newReview);
+    document.getElementById("newReview").value = "";
+    closeReviewModal();
+  }
+
+  function closeValidationModal() {
+    document.getElementById("validationModal").classList.add("hidden");
+  }
+
+  function loadReviews() {
+    const reviewList = document.getElementById("reviewList");
+    reviewList.innerHTML = `
+      <div><strong>Jane Doe:</strong> Beautiful location and great host!</div>
+      <div><strong>Mike:</strong> Super clean and cozy, highly recommend.</div>
+    `;
+  }
+</script>
 
 </body>
 </html>
