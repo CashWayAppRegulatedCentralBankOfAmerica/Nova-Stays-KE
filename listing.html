@@ -90,7 +90,10 @@
               <p class="text-gray-500">Nairobi</p>
             </div>
           </div>
-          <div class="text-yellow-500 text-xs">⭐⭐⭐⭐☆ (24)</div>
+          <!-- Rating is now clickable -->
+      <div class="text-yellow-500 text-xs cursor-pointer" onclick="openReviewModal(this)">
+        ⭐⭐⭐⭐⭐ (25)
+      </div>
         </div>
 
         <h3 class="font-semibold text-sm">Elegant Studio Apartment</h3>
@@ -158,8 +161,12 @@
           <p class="text-gray-500">Mombasa</p>
         </div>
       </div>
-      <div class="text-yellow-500 text-xs cursor-pointer" onclick="openReviewModal('Rustic Luxury', 'Jacob Fayama')">
-  ⭐⭐⭐⭐ (18)
+      <div class="listing" data-listing="Luxury Beach Villa" data-host="Mike Landry">
+  <!-- your listing content -->
+
+  <!-- Ratings: make it clickable -->
+  <div class="rating" onclick="openReviewModal(this)">⭐⭐⭐⭐ (18)</div>
+
 </div>
     </div>
     <h3 class="font-semibold text-sm">Cozy Beach Villa</h3>
@@ -213,9 +220,14 @@
           <p class="text-gray-500">Runda Estate</p>
         </div>
       </div>
-      <div class="text-yellow-500 text-xs cursor-pointer" onclick="openReviewModal('Rustic Luxury', 'Jacob Fayama')">
-  ⭐⭐⭐⭐ (18)
+      <div class="listing" data-listing="Rustic Luxury" data-host="Jacob Fayama">
+  <!-- your listing content -->
+
+  <!-- Ratings: make it clickable -->
+  <div class="rating" onclick="openReviewModal(this)">⭐⭐⭐⭐ (18)</div>
+
 </div>
+
     </div>
     <h3 class="font-semibold text-sm">Rustic Luxury</h3>
     <p class="text-green-600 font-bold text-sm">USD 120 / night</p>
@@ -333,53 +345,65 @@
       <div class="flex items-center gap-2">
         <img src="https://i.pravatar.cc/40?img=21" class="w-7 h-7 rounded-full" alt="Host" />
         <div class="text-xs">
-          <p class="font-semibold">Lucy Kamau</p>
+          <p class="font-semibold listing-host">Lucy Kamau</p>
           <p class="text-gray-500">Kilimani</p>
         </div>
       </div>
-      <div class="text-yellow-500 text-xs">⭐⭐⭐⭐⭐ (25)</div>
+
+      <!-- Rating is now clickable -->
+      <div class="text-yellow-500 text-xs cursor-pointer" onclick="openReviewModal(this)">
+        ⭐⭐⭐⭐⭐ (25)
+      </div>
     </div>
-    <h3 class="font-semibold text-sm">Chic Loft Apartment</h3>
+
+    <h3 class="font-semibold text-sm listing-name">Chic Loft Apartment</h3>
     <p class="text-green-600 font-bold text-sm">USD 95 / night</p>
+
     <div class="flex flex-wrap gap-1 mt-2 text-[11px] text-gray-700">
       <span class="bg-gray-200 px-2 py-[2px] rounded-full">WiFi</span>
       <span class="bg-gray-200 px-2 py-[2px] rounded-full">Elevator</span>
       <span class="bg-gray-200 px-2 py-[2px] rounded-full">Air Conditioning</span>
       <span class="bg-gray-200 px-2 py-[2px] rounded-full">Balcony</span>
     </div>
-    <button onclick="bookNow('Chic Loft Apartment', 95, 'Kilimani')" class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white text-sm py-1.5 rounded-md">Book Now</button>
+
+    <button onclick="bookNow('Chic Loft Apartment', 95, 'Kilimani')" class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white text-sm py-1.5 rounded-md">
+      Book Now
+    </button>
   </div>
 </div>
+
 
 
   </main>
 
-  <!-- Review Modal -->
-<div id="reviewModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
-  <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-4 relative">
-    <h3 class="text-lg font-semibold mb-2">Reviews for <span id="listingTitle"></span></h3>
-    <div id="reviewList" class="space-y-2 max-h-48 overflow-y-auto mb-4">
-      <!-- Reviews will be added here -->
+<div id="reviewModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden z-50">
+  <div class="bg-white rounded p-4 w-full max-w-md">
+    <h2 class="text-lg font-bold mb-2">Reviews for <span id="reviewListingName"></span></h2>
+
+    <div id="existingReviews" class="text-sm mb-3 space-y-2">
+      <!-- Example reviews -->
+      <div><strong>Michael:</strong> Great stay!</div>
+      <div><strong>Sarah:</strong> Loved the view!</div>
     </div>
-    <textarea id="newReview" placeholder="Write your review..." class="w-full border p-2 rounded mb-3 text-sm"></textarea>
-    <button onclick="submitReview()" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded text-sm">
-      Submit Review
-    </button>
-    <button onclick="closeReviewModal()" class="absolute top-2 right-3 text-gray-500 text-xl">&times;</button>
+
+    <textarea id="userReview" placeholder="Leave your review..." class="w-full p-2 border border-gray-300 rounded mb-2"></textarea>
+    <button onclick="submitReview()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded">Submit Review</button>
+    <button onclick="closeReviewModal()" class="ml-2 text-gray-500 text-sm">Close</button>
   </div>
 </div>
 
-<!-- Validation Modal -->
-<div id="validationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
-  <div class="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm">
-    <p class="text-gray-700 text-sm">
-      You can't send a review. Your email hasn’t placed any booking with <strong><span id="validationListing"></span></strong>. Only users who have been hosted by <strong><span id="validationHost"></span></strong> are allowed to add a review within 72hrs after their check-out.
+  <div id="validationModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden z-50">
+  <div class="bg-white rounded p-4 w-full max-w-md text-center">
+    <h2 class="text-red-600 font-semibold mb-2">Review Not Allowed</h2>
+    <p class="text-sm mb-3">
+      You can't submit a review for <strong><span id="validationListingName"></span></strong>.
+      Only users who booked and were hosted by <strong><span id="validationHostName"></span></strong> can leave reviews within 72 hours after checkout.
     </p>
-    <button onclick="closeValidationModal()" class="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-sm">
-      Close
-    </button>
+    <button onclick="closeValidationModal()" class="bg-gray-300 px-4 py-1 rounded">OK</button>
   </div>
 </div>
+
+
 
   <!-- Booking Page Redirect Logic -->
   <script>
@@ -442,53 +466,39 @@
     });
   </script>
   <script>
-  let currentListing = '';
-  let currentHost = '';
+  function openReviewModal(el) {
+    const listingCard = el.closest(".p-3");
+    const listingName = listingCard.querySelector(".listing-name").textContent.trim();
+    const hostName = listingCard.querySelector(".listing-host").textContent.trim();
 
-  function openReviewModal(listingName, hostName) {
-    currentListing = listingName;
-    currentHost = hostName;
-    document.getElementById("listingTitle").textContent = listingName;
+    // Set text in review modal
+    document.getElementById("reviewListingName").textContent = listingName;
+    document.getElementById("reviewHostName").textContent = hostName;
+
+    // Show review modal
     document.getElementById("reviewModal").classList.remove("hidden");
-    loadReviews(); // optional: show existing reviews
+
+    // Set validation modal data too
+    document.getElementById("validationListingName").textContent = listingName;
+    document.getElementById("validationHostName").textContent = hostName;
+  }
+</script>
+  <script>
+  function submitReview() {
+    // Show validation modal instead of saving
+    document.getElementById("reviewModal").classList.add("hidden");
+    document.getElementById("validationModal").classList.remove("hidden");
   }
 
   function closeReviewModal() {
     document.getElementById("reviewModal").classList.add("hidden");
   }
 
-  function submitReview() {
-    // Simulated email validation logic
-    const emailHasBooking = false; // change this based on your booking logic
-    if (!emailHasBooking) {
-      document.getElementById("reviewModal").classList.add("hidden");
-      document.getElementById("validationListing").textContent = currentListing;
-      document.getElementById("validationHost").textContent = currentHost;
-      document.getElementById("validationModal").classList.remove("hidden");
-      return;
-    }
-
-    const reviewText = document.getElementById("newReview").value;
-    const reviewList = document.getElementById("reviewList");
-    const newReview = document.createElement("div");
-    newReview.innerHTML = `<strong>You:</strong> ${reviewText}`;
-    reviewList.appendChild(newReview);
-    document.getElementById("newReview").value = "";
-    closeReviewModal();
-  }
-
   function closeValidationModal() {
     document.getElementById("validationModal").classList.add("hidden");
   }
-
-  function loadReviews() {
-    const reviewList = document.getElementById("reviewList");
-    reviewList.innerHTML = `
-      <div><strong>Jane Doe:</strong> Beautiful location and great host!</div>
-      <div><strong>Mike:</strong> Super clean and cozy, highly recommend.</div>
-    `;
-  }
 </script>
+
 
 </body>
 </html>
