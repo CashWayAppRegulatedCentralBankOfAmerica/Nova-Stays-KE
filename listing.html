@@ -211,7 +211,15 @@
           <p class="text-gray-500">Runda Estate</p>
         </div>
       </div>
-      <div class="text-yellow-500 text-xs">⭐⭐⭐⭐ (18)</div>
+      <div class="text-yellow-500 text-xs">
+        ⭐⭐⭐⭐ (18)
+        <a href="#" 
+          class="text-blue-600 underline ml-2 review-trigger" 
+          data-listing="Rustic Bogani Luxury" 
+          data-host="Jacob Fayama">
+          View Reviews
+        </a>
+      </div>
     </div>
     <h3 class="font-semibold text-sm">Rustic Luxury</h3>
     <p class="text-green-600 font-bold text-sm">USD 120 / night</p>
@@ -275,7 +283,7 @@
           <p class="text-gray-500">Zanzibar</p>
         </div>
       </div>
-      <div class="text-yellow-500 text-xs">⭐⭐⭐☆☆ (8)</div>
+      <div class="text-yellow-500 text-xs cursor-pointer" onclick="showReviewModal('Cozy Bungalow', 'Beatrice Wanja')">⭐⭐⭐☆☆ (8)</div>
     </div>
     <h3 class="font-semibold text-sm">Cozy Bungalow</h3>
     <p class="text-green-600 font-bold text-sm">USD 50 / night</p>
@@ -350,6 +358,15 @@
 
   </main>
 
+  <!-- Review Modal -->
+<div id="reviewModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full mx-4 text-center">
+    <h2 class="text-lg font-bold mb-3">Review Access Restricted</h2>
+    <p id="reviewModalMessage" class="text-gray-700 text-sm leading-relaxed"></p>
+    <button id="closeReviewModal" class="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Close</button>
+  </div>
+</div>
+
   <!-- Booking Page Redirect Logic -->
   <script>
     function bookNow(name, price, location) {
@@ -410,6 +427,27 @@
       }
     });
   </script>
+  <script>
+  // Handle review modal trigger
+  document.querySelectorAll('.review-trigger').forEach(button => {
+    button.addEventListener('click', function (e) {
+      e.preventDefault();
+      const listing = this.dataset.listing;
+      const host = this.dataset.host;
+      const message = `
+        Your email has not yet made any booking with <strong>${listing}</strong>.<br>
+        Only users who have been hosted by <strong>${host}</strong> are allowed to leave a review within 72hrs after check-out.
+      `;
+      document.getElementById('reviewModalMessage').innerHTML = message;
+      document.getElementById('reviewModal').classList.remove('hidden');
+    });
+  });
+
+  // Close modal
+  document.getElementById('closeReviewModal').addEventListener('click', () => {
+    document.getElementById('reviewModal').classList.add('hidden');
+  });
+</script>
 
 </body>
 </html>
