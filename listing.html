@@ -134,6 +134,72 @@
   </div>
 </div>
 
+    <!-- Listing X -->
+<div class="bg-white rounded-lg shadow-sm overflow-hidden max-w-sm mx-auto">
+  <!-- Main Image -->
+  <img
+    id="carouselThumbX"
+    src="123.png"
+    class="w-full h-48 object-cover"
+    alt="Listing Image"
+  />
+
+  <!-- Thumbnails -->
+  <div class="flex justify-center items-center gap-2 mt-2 overflow-x-auto">
+    <img src="123.png" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 1" onclick="document.getElementById('carouselThumbX').src=this.src" />
+    <img src="123.png" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 2" onclick="document.getElementById('carouselThumbX').src=this.src" />
+    <img src="123.png" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 3" onclick="document.getElementById('carouselThumbX').src=this.src" />
+    <img src="123.png" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 4" onclick="document.getElementById('carouselThumbX').src=this.src" />
+    <img src="123.png" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 5" onclick="document.getElementById('carouselThumbX').src=this.src" />
+    <img src="123.png" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 6" onclick="document.getElementById('carouselThumbX').src=this.src" />
+    <img src="123.png" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 7" onclick="document.getElementById('carouselThumbX').src=this.src" />
+    <img src="123.png" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 8" onclick="document.getElementById('carouselThumbX').src=this.src" />
+    <img src="123.png" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 9" onclick="document.getElementById('carouselThumbX').src=this.src" />
+    <img src="123.png" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 10" onclick="document.getElementById('carouselThumbX').src=this.src" />
+    <img src="123.png" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 11" onclick="document.getElementById('carouselThumbX').src=this.src" />
+  </div>
+
+  <div class="p-3">
+    <div class="flex items-center justify-between mb-1">
+      <div class="flex items-center gap-2">
+        <!-- Host image -->
+        <img
+          src="123.png"
+          class="w-7 h-7 rounded-full object-cover"
+          alt="Host"
+        />
+        <div class="text-xs">
+          <p class="font-semibold">Lydia Kamau</p>
+          <p class="text-gray-500">Naivasha</p>
+        </div>
+      </div>
+      <div class="text-yellow-500 text-xs">
+        ⭐⭐⭐⭐ (12)
+        <a href="#" 
+          class="text-blue-600 underline ml-2 review-trigger" 
+          data-listing="Seaside Zen Villa" 
+          data-host="Lydia Kamau">
+          View Reviews
+        </a>
+      </div>
+    </div>
+    <h3 class="font-semibold text-sm">Seaside Zen Villa</h3>
+    <p class="text-green-600 font-bold text-sm">USD 95 / night</p>
+    <div class="flex flex-wrap gap-1 mt-2 text-[11px] text-gray-700">
+      <span class="bg-gray-200 px-2 py-[2px] rounded-full">WiFi</span>
+      <span class="bg-gray-200 px-2 py-[2px] rounded-full">Pool</span>
+      <span class="bg-gray-200 px-2 py-[2px] rounded-full">Breakfast</span>
+    </div>
+    <button
+      onclick="bookNow('Seaside Zen Villa', 95, 'Naivasha')"
+      class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white text-sm py-1.5 rounded-md"
+    >
+      Book Now
+    </button>
+  </div>
+</div>
+
+
   </main>
 
   <!-- Review Modal -->
