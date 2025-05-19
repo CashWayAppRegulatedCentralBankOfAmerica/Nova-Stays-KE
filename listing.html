@@ -559,28 +559,73 @@
       "https://source.unsplash.com/400x300/?pool",
       "https://source.unsplash.com/400x300/?city"
     ];
+<script>
+  const imagesPerListing = {
+    3: [
+      "IMG-20250517-WA0016.jpg",
+      "IMG-20250517-WA0010.jpg",
+      "IMG-20250517-WA0007.jpg",
+      "IMG-20250517-WA0012.jpg",
+      "IMG-20250517-WA0017.jpg",
+      "IMG-20250517-WA0014.jpg",
+      "IMG-20250517-WA0011.jpg",
+      "IMG-20250517-WA0013.jpg",
+      "IMG-20250517-WA0009.jpg",
+      "IMG-20250517-WA0018.jpg",
+      "IMG-20250517-WA0008.jpg",
+    ],
+    4: [
+      "IMG-20250517-WA0016.jpg",
+      "IMG-20250517-WA0010.jpg",
+      "IMG-20250517-WA0007.jpg",
+      "IMG-20250517-WA0012.jpg",
+      "IMG-20250517-WA0017.jpg",
+      "IMG-20250517-WA0014.jpg",
+      "IMG-20250517-WA0011.jpg",
+      "IMG-20250517-WA0013.jpg",
+      "IMG-20250517-WA0009.jpg",
+      "IMG-20250517-WA0018.jpg",
+      "IMG-20250517-WA0008.jpg",
+    ],
+    5: [
+      "IMG-20250517-WA0016.jpg",
+      "IMG-20250517-WA0010.jpg",
+      "IMG-20250517-WA0007.jpg",
+      "IMG-20250517-WA0012.jpg",
+      "IMG-20250517-WA0017.jpg",
+      "IMG-20250517-WA0014.jpg",
+      "IMG-20250517-WA0011.jpg",
+      "IMG-20250517-WA0013.jpg",
+      "IMG-20250517-WA0009.jpg",
+      "IMG-20250517-WA0018.jpg",
+      "IMG-20250517-WA0008.jpg",
+    ],
+  };
 
-    let currentImageIndex = 0;
+  const currentImageIndices = {
+    3: 0,
+    4: 0,
+    5: 0,
+  };
 
-    function updateImage(index, id) {
-      const img = document.getElementById(`carouselThumb${id}`);
-      img.src = images[index];
-    }
+  function updateImage(listingId) {
+    const index = currentImageIndices[listingId];
+    const img = document.getElementById(`carouselThumb${listingId}`);
+    img.src = imagesPerListing[listingId][index];
+  }
 
-    function nextImage(id) {
-      currentImageIndex = (currentImageIndex + 1) % images.length;
-      updateImage(currentImageIndex, id);
-    }
+  function nextImage(listingId) {
+    currentImageIndices[listingId] = (currentImageIndices[listingId] + 1) % imagesPerListing[listingId].length;
+    updateImage(listingId);
+  }
 
-    function prevImage(id) {
-      currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
-      updateImage(currentImageIndex, id);
-    }
-  </script>
-
-  <script>
-    // On page load, fetch logged in user data from localStorage
-    document.addEventListener('DOMContentLoaded', () => {
+  function prevImage(listingId) {
+    currentImageIndices[listingId] =
+      (currentImageIndices[listingId] - 1 + imagesPerListing[listingId].length) % imagesPerListing[listingId].length;
+    updateImage(listingId);
+  }
+</script>
+, () => {
       const user = JSON.parse(localStorage.getItem('novaLoggedIn'));
       if(user) {
         const userNameElem = document.getElementById('userName');
