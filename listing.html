@@ -431,21 +431,30 @@
       "https://source.unsplash.com/400x300/?city"
     ];
 
-    let currentImageIndex = 0;
+    <div class="listing" data-images='["img1.jpg","img2.jpg","img3.jpg"]'>
+  <img src="img1.jpg" class="listing-img" />
+  <button class="prev-btn">Prev</button>
+  <button class="next-btn">Next</button>
+  <!-- other listing info -->
+</div>
 
-    function updateImage(index, id) {
-      const img = document.getElementById(`carouselThumb${id}`);
-      img.src = images[index];
-    }
+<script>
+document.querySelectorAll('.listing').forEach(listing => {
+  const images = JSON.parse(listing.dataset.images);
+  let index = 0;
+  const imgTag = listing.querySelector('.listing-img');
 
-    function nextImage(id) {
-      currentImageIndex = (currentImageIndex + 1) % images.length;
-      updateImage(currentImageIndex, id);
-    }
+  listing.querySelector('.prev-btn').onclick = () => {
+    index = (index - 1 + images.length) % images.length;
+    imgTag.src = images[index];
+  };
+  listing.querySelector('.next-btn').onclick = () => {
+    index = (index + 1) % images.length;
+    imgTag.src = images[index];
+  };
+});
+</script>
 
-    function prevImage(id) {
-      currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
-      updateImage(currentImageIndex, id);
     }
   </script>
 
