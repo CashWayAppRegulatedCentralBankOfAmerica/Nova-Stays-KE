@@ -483,11 +483,11 @@
     });
   }
 
-  // Render listings to your container
+  // Render listings to container
   async function renderListings() {
     const listings = await getAllListings();
 
-    if (!listings.length) return; // no listings saved yet
+    if (!listings.length) return;
 
     const container = document.getElementById("listingsContainer");
     if (!container) {
@@ -495,8 +495,7 @@
       return;
     }
 
-    // Clear current content
-    container.innerHTML = "";
+    container.innerHTML = ""; // Clear previous listings
 
     listings.forEach((listing) => {
       const featuresHtml = listing.features.map(f => `<span class="badge bg-success me-1">${f}</span>`).join("");
@@ -532,11 +531,21 @@
     });
   }
 
-  // Run on page load
+  // Initial render on page load
   window.addEventListener("DOMContentLoaded", () => {
     renderListings();
   });
+
+  // Listen for new listing events via BroadcastChannel
+  const channel = new BroadcastChannel('nova-listings');
+  channel.onmessage = (event) => {
+    if (event.data === 'new-listing-added') {
+      console.log("New listing added - refreshing listings...");
+      renderListings();
+    }
+  };
 </script>
+
 
 
  <!-- Footer -->
