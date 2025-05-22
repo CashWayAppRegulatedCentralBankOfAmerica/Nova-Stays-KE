@@ -1,182 +1,125 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Host Your Property - Nova Stays KE</title>
+  <meta charset="UTF-8">
+  <title>Become a Host - Nova Stays KE</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="bg-gray-50 min-h-screen">
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-center mb-6 text-blue-700">Become a Host</h1>
 
-  <!-- Header -->
-  <header class="bg-white shadow p-4 flex items-center justify-between">
-    <div class="text-2xl font-bold text-blue-700">Nova Stays KE</div>
-    <nav>
-      <a href="listing.html" class="text-blue-600 hover:underline">Back to Listings</a>
-    </nav>
-  </header>
+    <!-- Form -->
+    <form id="hostForm" class="bg-white p-6 rounded-lg shadow-md space-y-4">
+      <input type="text" id="hostName" placeholder="Your Name" class="w-full border rounded p-2" required>
+      <input type="text" id="listingName" placeholder="Listing Name" class="w-full border rounded p-2" required>
+      <input type="text" id="location" placeholder="Location" class="w-full border rounded p-2" required>
+      <input type="number" id="pricePerNight" placeholder="Price per Night (KES)" class="w-full border rounded p-2" required>
+      
+      <label class="block font-medium">Upload Property Images (max 20)</label>
+      <input type="file" id="propertyImages" accept="image/*" multiple class="w-full border rounded p-2" required>
 
-  <!-- Main Content -->
-  <main class="flex-grow max-w-4xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-semibold mb-6 text-center text-gray-800">Become a Host - List Your Property</h1>
+      <label class="block font-medium">Upload Host Profile Image</label>
+      <input type="file" id="hostProfile" accept="image/*" class="w-full border rounded p-2" required>
 
-    <form id="host-form" class="space-y-6 bg-white p-6 rounded-lg shadow-md">
-
-      <div>
-        <label for="host-name" class="block text-gray-700 font-medium mb-1">Host Name</label>
-        <input
-          id="host-name"
-          name="host-name"
-          type="text"
-          required
-          class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Your full name"
-        />
-      </div>
-
-      <div>
-        <label for="listing-name" class="block text-gray-700 font-medium mb-1">Listing Name</label>
-        <input
-          id="listing-name"
-          name="listing-name"
-          type="text"
-          required
-          class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Title of your property listing"
-        />
-      </div>
-
-      <div>
-        <label for="location" class="block text-gray-700 font-medium mb-1">Location</label>
-        <input
-          id="location"
-          name="location"
-          type="text"
-          required
-          class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Where is your property located?"
-        />
-      </div>
-
-      <div>
-        <label for="price" class="block text-gray-700 font-medium mb-1">Price Per Night (KES)</label>
-        <input
-          id="price"
-          name="price"
-          type="number"
-          min="0"
-          required
-          class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="e.g., 3500"
-        />
-      </div>
-
-      <div>
-        <label for="property-images" class="block text-gray-700 font-medium mb-1">Property Images (Max 20)</label>
-        <input
-          id="property-images"
-          name="property-images"
-          type="file"
-          multiple
-          accept="image/*"
-          required
-          class="w-full"
-        />
-      </div>
-
-      <div>
-        <label for="host-profile" class="block text-gray-700 font-medium mb-1">Host Profile Image</label>
-        <input
-          id="host-profile"
-          name="host-profile"
-          type="file"
-          accept="image/*"
-          required
-          class="w-full"
-        />
-      </div>
-
-      <div>
-        <button
-          id="submit-listing"
-          type="submit"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-md transition"
-        >
-          Submit Listing
-        </button>
-      </div>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Submit Listing</button>
     </form>
-  </main>
 
-  <!-- Script -->
+    <!-- Host Panel -->
+    <div class="mt-10">
+      <h2 class="text-2xl font-semibold mb-4">Your Listings</h2>
+      <div id="hostListings" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+  </div>
+
   <script>
-    // Helper function to convert file to base64 Data URL
-    function readFileAsDataURL(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = e => resolve(e.target.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
+    const hostForm = document.getElementById('hostForm');
+    const hostListings = document.getElementById('hostListings');
+
+    function getListings() {
+      return JSON.parse(localStorage.getItem('nova_listings')) || [];
+    }
+
+    function saveListings(listings) {
+      localStorage.setItem('nova_listings', JSON.stringify(listings));
+    }
+
+    function renderListings() {
+      const listings = getListings();
+      hostListings.innerHTML = '';
+
+      listings.forEach((listing, index) => {
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded shadow p-4';
+
+        card.innerHTML = `
+          <img src="${listing.images[0]}" class="w-full h-40 object-cover rounded mb-2" alt="">
+          <h3 class="text-lg font-bold">${listing.listingName}</h3>
+          <p>Location: ${listing.location}</p>
+          <p>Price: KES ${listing.pricePerNight}</p>
+          <p>Host: ${listing.hostName}</p>
+          <div class="flex space-x-2 mt-2">
+            <button onclick="deleteListing(${index})" class="text-red-600 hover:underline">Delete</button>
+          </div>
+        `;
+        hostListings.appendChild(card);
       });
     }
 
-    document.getElementById('host-form').addEventListener('submit', async function(e) {
+    function deleteListing(index) {
+      const listings = getListings();
+      listings.splice(index, 1);
+      saveListings(listings);
+      renderListings();
+    }
+
+    hostForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const hostName = document.getElementById('host-name').value.trim();
-      const listingName = document.getElementById('listing-name').value.trim();
+      const hostName = document.getElementById('hostName').value.trim();
+      const listingName = document.getElementById('listingName').value.trim();
       const location = document.getElementById('location').value.trim();
-      const price = document.getElementById('price').value.trim();
+      const pricePerNight = document.getElementById('pricePerNight').value.trim();
+      const imageFiles = document.getElementById('propertyImages').files;
+      const hostProfileFile = document.getElementById('hostProfile').files[0];
 
-      const propertyImagesInput = document.getElementById('property-images');
-      const hostProfileInput = document.getElementById('host-profile');
-
-      if (
-        !hostName ||
-        !listingName ||
-        !location ||
-        !price ||
-        propertyImagesInput.files.length === 0 ||
-        hostProfileInput.files.length === 0
-      ) {
-        alert('Please fill all fields and upload required images.');
+      if (imageFiles.length === 0 || imageFiles.length > 20 || !hostProfileFile) {
+        alert('Please upload between 1 and 20 images and a host profile image.');
         return;
       }
 
-      if (propertyImagesInput.files.length > 20) {
-        alert('You can upload a maximum of 20 property images.');
-        return;
-      }
+      // Convert images to base64
+      const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
 
-      // Read property images as base64
-      const propertyImagesPromises = Array.from(propertyImagesInput.files).map(file => readFileAsDataURL(file));
-      const propertyImages = await Promise.all(propertyImagesPromises);
+      const imageBase64s = await Promise.all([...imageFiles].map(toBase64));
+      const hostProfileImage = await toBase64(hostProfileFile);
 
-      // Read host profile image as base64
-      const hostProfile = await readFileAsDataURL(hostProfileInput.files[0]);
-
-      // Build listing object
       const listing = {
         hostName,
         listingName,
         location,
-        pricePerNight: price,
-        images: propertyImages,
-        hostProfile,
-        id: Date.now()  // unique id for edit/delete later
+        pricePerNight,
+        images: imageBase64s,
+        hostProfileImage
       };
 
-      // Get existing listings from localStorage
-      let listings = JSON.parse(localStorage.getItem('nova_listings')) || [];
-
+      const listings = getListings();
       listings.push(listing);
+      saveListings(listings);
 
-      localStorage.setItem('nova_listings', JSON.stringify(listings));
+      hostForm.reset();
+      renderListings();
 
-      // Redirect to listing page
-      window.location.href = 'listing.html';
+      alert('Listing added successfully!');
     });
-  </script>
 
+    // Load existing listings on page load
+    document.addEventListener('DOMContentLoaded', renderListings);
+  </script>
 </body>
 </html>
