@@ -455,39 +455,89 @@
   // Run on page load
   document.addEventListener('DOMContentLoaded', loadListings);
 </script>
-  const listings = JSON.parse(localStorage.getItem('novaListings') || '[]');
-  const container = document.getElementById('listingsContainer');
-
-  if (!listings.length) {
-    container.innerHTML = '<p class="text-gray-500">No listings available yet.</p>';
+<script>
+  // Open IndexedDB database
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open("NovaStaysDB", 1);
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve(request.result);
+      request.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains("listings")) {
+          db.createObjectStore("listings", { keyPath: "id" });
+        }
+      };
+    });
   }
 
-  listings.forEach(listing => {
-    const div = document.createElement('div');
-    div.className = "bg-white shadow p-4 rounded mb-4";
+  // Get all listings from IndexedDB
+  async function getAllListings() {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction("listings", "readonly");
+      const store = tx.objectStore("listings");
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
 
-    const coverImg = listing.images[0];
+  // Render listings to your container
+  async function renderListings() {
+    const listings = await getAllListings();
 
-    div.innerHTML = `
-      <div class="flex items-center mb-2">
-        <img src="${listing.hostAvatar}" alt="Host Avatar" class="w-10 h-10 rounded-full mr-2">
-        <div>
-          <h3 class="text-lg font-semibold">${listing.title}</h3>
-          <p class="text-sm text-gray-600">Hosted by ${listing.hostName}</p>
+    if (!listings.length) return; // no listings saved yet
+
+    const container = document.getElementById("listingsContainer");
+    if (!container) {
+      console.warn("No container with id 'listingsContainer' found.");
+      return;
+    }
+
+    // Clear current content
+    container.innerHTML = "";
+
+    listings.forEach((listing) => {
+      const featuresHtml = listing.features.map(f => `<span class="badge bg-success me-1">${f}</span>`).join("");
+
+      const imagesHtml = listing.images
+        .slice(0, 3)
+        .map(img => `<img src="${img}" alt="${listing.title}" class="rounded me-2" style="width:80px; height:60px; object-fit: cover;">`)
+        .join("");
+
+      const listingHtml = `
+        <div class="card mb-3 shadow-sm">
+          <div class="row g-0">
+            <div class="col-md-4">
+              <img src="${listing.images[0]}" class="img-fluid rounded-start" alt="${listing.title}">
+            </div>
+            <div class="col-md-8">
+              <div class="card-body">
+                <h5 class="card-title">${listing.title}</h5>
+                <p class="card-text"><small class="text-muted">${listing.location} - $${listing.price} per night</small></p>
+                <p>${featuresHtml}</p>
+                <p class="mb-1"><strong>Host:</strong> ${listing.hostName}</p>
+                <p>${listing.rating || ""}</p>
+                <div class="d-flex align-items-center">
+                  ${imagesHtml}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <img src="${coverImg}" alt="Property Image" class="w-full h-48 object-cover rounded mb-2">
-      <p class="text-gray-700 mb-1">${listing.location}</p>
-      <p class="text-green-600 font-semibold">$${listing.price} / night</p>
-      <p class="text-yellow-500 text-sm mb-2">${listing.rating}</p>
-      <div class="flex flex-wrap gap-2 text-xs text-white">
-        ${listing.features.map(f => `<span class="bg-green-600 px-2 py-1 rounded">${f}</span>`).join('')}
-      </div>
-    `;
+      `;
 
-    container.appendChild(div);
+      container.insertAdjacentHTML("beforeend", listingHtml);
+    });
+  }
+
+  // Run on page load
+  window.addEventListener("DOMContentLoaded", () => {
+    renderListings();
   });
 </script>
+
 
  <!-- Footer -->
   <footer class="bg-white border-t mt-12">
