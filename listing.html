@@ -406,8 +406,8 @@
   </div>
 </div>
 
- <!-- Booking Page Redirect Logic -->
 <script>
+  // Booking redirect logic
   function bookNow(name, price, location) {
     const userName = document.getElementById("userName").textContent;
     const userEmail = document.getElementById("userEmail").textContent;
@@ -415,7 +415,7 @@
     window.location.href = url;
   }
 
-  // Carousel logic: separate for each listing
+  // Object to store listings and their image arrays + current index for carousel
   const listings = {
     1: {
       images: [
@@ -448,28 +448,13 @@
         "IMG-20250517-WA0008.jpg"
       ],
       index: 0
-    },
-    3: {
-      images: [
-        "IMG-20250517-WA0016.jpg",
-        "IMG-20250517-WA0010.jpg",
-        "IMG-20250517-WA0007.jpg",
-        "IMG-20250517-WA0012.jpg",
-        "IMG-20250517-WA0017.jpg",
-        "IMG-20250517-WA0014.jpg",
-        "IMG-20250517-WA0011.jpg",
-        "IMG-20250517-WA0013.jpg",
-        "IMG-20250517-WA0009.jpg",
-        "IMG-20250517-WA0018.jpg",
-        "IMG-20250517-WA0008.jpg"
-      ],
-      index: 0
     }
   };
-  <script>
-  // Carousel logic
-  const listings = {};
 
+  // Track last listing ID used, to assign new IDs incrementally
+  let lastListingId = Object.keys(listings).length;
+
+  // Update image displayed for a given listing ID
   function updateImage(listingId) {
     const listing = listings[listingId];
     if (!listing) return;
@@ -477,6 +462,7 @@
     if (img) img.src = listing.images[listing.index];
   }
 
+  // Next image button handler
   function nextImage(listingId) {
     const listing = listings[listingId];
     if (!listing) return;
@@ -484,16 +470,15 @@
     updateImage(listingId);
   }
 
+  // Previous image button handler
   function prevImage(listingId) {
     const listing = listings[listingId];
     if (!listing) return;
     listing.index = (listing.index - 1 + listing.images.length) % listing.images.length;
     updateImage(listingId);
   }
-</script>
 
-<script>
-  // Show user name/email if logged in
+  // On page load, populate logged-in user info
   document.addEventListener('DOMContentLoaded', () => {
     const user = JSON.parse(localStorage.getItem('novaLoggedIn'));
     if (user) {
@@ -504,89 +489,104 @@
         userEmailElem.textContent = user.email;
       }
     }
+  });
 
-    // Load dynamic listings
-    const savedListings = JSON.parse(localStorage.getItem('novaListings') || '[]');
-    const container = document.querySelector('main');
-    let count = 100; // Start from a high ID to avoid clashing with static IDs
+  // Review modal trigger & close handlers
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.review-trigger').forEach(button => {
+      button.addEventListener('click', function (e) {
+        e.preventDefault();
+        const listing = this.dataset.listing;
+        const host = this.dataset.host;
+        const message = `
+          Your email has not yet made any booking with <strong>${listing}</strong>.<br>
+          Only users who have been hosted by <strong>${host}</strong> are allowed to leave a review within 72hrs after check-out.
+        `;
+        document.getElementById('reviewModalMessage').innerHTML = message;
+        document.getElementById('reviewModal').classList.remove('hidden');
+      });
+    });
 
-    savedListings.forEach(listing => {
-      const listingId = count++;
-      listings[listingId] = {
-        images: [listing.image], // Only one image for now
-        index: 0
-      };
+    document.getElementById('closeReviewModal').addEventListener('click', () => {
+      document.getElementById('reviewModal').classList.add('hidden');
+    });
+  });
 
-      const featureBadges = listing.features.map(f =>
-        `<span class="bg-gray-200 px-2 py-[2px] rounded-full text-[11px]">${f}</span>`
-      ).join(' ');
+  // Dynamically add a new listing to the DOM and listings object
+  function addListing(listingData) {
+    // listingData = {
+    //   hostName, hostAvatarUrl, hostLocation, hostRating, hostReviewCount,
+    //   propertyName, propertyPrice, propertyLocation,
+    //   propertyAmenities: [], propertyImages: []
+    // }
 
-      const card = document.createElement('div');
-      card.className = 'bg-white rounded-lg shadow-sm overflow-hidden';
+    lastListingId++;
+    const id = lastListingId;
 
-      card.innerHTML = `
-        <img id="carouselThumb${listingId}" src="${listing.image}" class="w-full h-48 object-cover" alt="Listing Image" />
+    // Add to listings object for carousel control
+    listings[id] = {
+      images: listingData.propertyImages,
+      index: 0
+    };
+
+    // Build amenities badges HTML
+    const amenitiesHtml = listingData.propertyAmenities.map(am => 
+      `<span class="bg-gray-200 px-2 py-[2px] rounded-full">${am}</span>`
+    ).join('');
+
+    // Create listing card element with matching structure and IDs/classes
+    const listingHTML = `
+      <div class="bg-white rounded-lg shadow-sm overflow-hidden" id="listingCard${id}">
+        <img id="carouselThumb${id}" src="${listingData.propertyImages[0]}" class="w-full h-48 object-cover" alt="Listing Image" />
         <div class="flex justify-center items-center gap-3 mt-1">
-          <button onclick="prevImage('${listingId}')" class="carousel-btn">←</button>
-          <button onclick="nextImage('${listingId}')" class="carousel-btn">→</button>
+          <button onclick="prevImage('${id}')" class="carousel-btn">←</button>
+          <button onclick="nextImage('${id}')" class="carousel-btn">→</button>
         </div>
         <div class="p-3">
           <div class="flex items-center justify-between mb-1">
             <div class="flex items-center gap-2">
-              <img src="${listing.hostAvatar}" class="w-7 h-7 rounded-full" alt="Host" />
+              <img src="${listingData.hostAvatarUrl}" class="w-7 h-7 rounded-full" alt="Host" />
               <div class="text-xs">
-                <p class="font-semibold">${listing.hostName}</p>
-                <p class="text-gray-500">${listing.location}</p>
+                <p class="font-semibold">${listingData.hostName}</p>
+                <p class="text-gray-500">${listingData.hostLocation}</p>
               </div>
             </div>
-            <div class="text-yellow-500 text-xs">${listing.rating}</div>
+            <div class="text-yellow-500 text-xs">⭐️${listingData.hostRating} (${listingData.hostReviewCount})</div>
           </div>
-          <h3 class="font-semibold text-sm">${listing.title}</h3>
-          <p class="text-green-600 font-bold text-sm">USD ${listing.price} / night</p>
-          <div class="flex flex-wrap gap-1 mt-2 text-[11px] text-gray-700">
-            ${featureBadges}
-          </div>
-          <button onclick="bookNow('${listing.title}', ${listing.price}, '${listing.location}')" class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white text-sm py-1.5 rounded-md">Book Now</button>
+          <h3 class="font-semibold text-sm">${listingData.propertyName}</h3>
+          <p class="text-green-600 font-bold text-sm">USD ${listingData.propertyPrice} / night</p>
+          <div class="flex flex-wrap gap-1 mt-2 text-[11px] text-gray-700">${amenitiesHtml}</div>
+          <button onclick="bookNow('${listingData.propertyName}', ${listingData.propertyPrice}, '${listingData.propertyLocation}')" class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white text-sm py-1.5 rounded-md">Book Now</button>
         </div>
-      `;
+      </div>
+    `;
 
-      container.appendChild(card);
-    });
-  });
-</script>
-
-<script>
-  // bookNow redirects to book.html with query params
-  function bookNow(title, price, location) {
-    const params = new URLSearchParams({
-      title: title,
-      price: price,
-      location: location
-    });
-    window.location.href = `book.html?${params.toString()}`;
+    // Append the new listing after all existing listings in main container
+    const listingsContainer = document.querySelector('main.max-w-6xl');
+    if (listingsContainer) {
+      listingsContainer.insertAdjacentHTML('beforeend', listingHTML);
+    }
   }
+
+  // Example usage: 
+  // addListing({
+  //   hostName: 'New Host',
+  //   hostAvatarUrl: 'https://i.pravatar.cc/40?img=12',
+  //   hostLocation: 'Nakuru',
+  //   hostRating: '4.5',
+  //   hostReviewCount: '5',
+  //   propertyName: 'New Cozy Cottage',
+  //   propertyPrice: 55,
+  //   propertyLocation: 'Nakuru',
+  //   propertyAmenities: ['WiFi', 'Parking', 'Breakfast'],
+  //   propertyImages: [
+  //     'https://source.unsplash.com/400x300/?cottage1',
+  //     'https://source.unsplash.com/400x300/?cottage2',
+  //     'https://source.unsplash.com/400x300/?cottage3'
+  //   ]
+  // });
 </script>
 
-<script>
-  // Review modal handler
-  document.querySelectorAll('.review-trigger').forEach(button => {
-    button.addEventListener('click', function (e) {
-      e.preventDefault();
-      const listing = this.dataset.listing;
-      const host = this.dataset.host;
-      const message = `
-        Your email has not yet made any booking with <strong>${listing}</strong>.<br>
-        Only users who have been hosted by <strong>${host}</strong> are allowed to leave a review within 72hrs after check-out.
-      `;
-      document.getElementById('reviewModalMessage').innerHTML = message;
-      document.getElementById('reviewModal').classList.remove('hidden');
-    });
-  });
-
-  document.getElementById('closeReviewModal').addEventListener('click', () => {
-    document.getElementById('reviewModal').classList.add('hidden');
-  });
-</script>
 
  <!-- Footer -->
   <footer class="bg-white border-t mt-12">
