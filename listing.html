@@ -69,6 +69,174 @@
   <!-- Listings Section -->
   <main class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
 
+    <!-- Example Listing -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+      <!-- Thumbnail -->
+      <img id="carouselThumb1" src="https://source.unsplash.com/400x300/?apartment" class="w-full h-48 object-cover" alt="Listing Image" />
+
+      <!-- Carousel Arrows -->
+      <div class="flex justify-center items-center gap-3 mt-1">
+        <button onclick="prevImage('1')" class="carousel-btn">←</button>
+        <button onclick="nextImage('1')" class="carousel-btn">→</button>
+      </div>
+
+      <!-- Details -->
+      <div class="p-3">
+        <div class="flex items-center justify-between mb-1">
+          <div class="flex items-center gap-2">
+            <img src="https://i.pravatar.cc/40" class="w-7 h-7 rounded-full" alt="Host">
+            <div class="text-xs">
+              <p class="font-semibold">Jane Host</p>
+              <p class="text-gray-500">Nairobi</p>
+            </div>
+          </div>
+          <div class="text-yellow-500 text-xs">⭐⭐⭐⭐☆ (24)</div>
+        </div>
+
+        <h3 class="font-semibold text-sm">Elegant Studio Apartment</h3>
+        <p class="text-green-600 font-bold text-sm">USD 40 / night</p>
+
+        <div class="flex flex-wrap gap-1 mt-2 text-[11px] text-gray-700">
+          <span class="bg-gray-200 px-2 py-[2px] rounded-full">WiFi</span>
+          <span class="bg-gray-200 px-2 py-[2px] rounded-full">TV</span>
+          <span class="bg-gray-200 px-2 py-[2px] rounded-full">Parking</span>
+          <span class="bg-gray-200 px-2 py-[2px] rounded-full">Hot Shower</span>
+        </div>
+
+        <button onclick="bookNow('Elegant Studio Apartment', 40, 'Nairobi')" class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white text-sm py-1.5 rounded-md">Book Now</button>
+      </div>
+    </div>
+
+    <!-- Second Listing -->
+<div class="bg-white rounded-lg shadow-sm overflow-hidden">
+  <img id="carouselThumb2" src="https://source.unsplash.com/400x300/?villa" class="w-full h-48 object-cover" alt="Listing Image" />
+
+  <div class="flex justify-center items-center gap-3 mt-1">
+    <button onclick="prevImage('2')" class="carousel-btn">←</button>
+    <button onclick="nextImage('2')" class="carousel-btn">→</button>
+  </div>
+
+  <div class="p-3">
+    <div class="flex items-center justify-between mb-1">
+      <div class="flex items-center gap-2">
+        <img src="https://i.pravatar.cc/40?img=5" class="w-7 h-7 rounded-full" alt="Host" />
+        <div class="text-xs">
+          <p class="font-semibold">Michael Host</p>
+          <p class="text-gray-500">Mombasa</p>
+        </div>
+      </div>
+      <div class="text-yellow-500 text-xs">⭐⭐⭐⭐⭐ (30)</div>
+    </div>
+
+    <h3 class="font-semibold text-sm">Luxury Beach Villa</h3>
+    <p class="text-green-600 font-bold text-sm">USD 120 / night</p>
+
+    <div class="flex flex-wrap gap-1 mt-2 text-[11px] text-gray-700">
+      <span class="bg-gray-200 px-2 py-[2px] rounded-full">Pool</span>
+      <span class="bg-gray-200 px-2 py-[2px] rounded-full">WiFi</span>
+      <span class="bg-gray-200 px-2 py-[2px] rounded-full">Parking</span>
+      <span class="bg-gray-200 px-2 py-[2px] rounded-full">Breakfast</span>
+    </div>
+
+    <button onclick="bookNow('Luxury Beach Villa', 120, 'Mombasa')" class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white text-sm py-1.5 rounded-md">Book Now</button>
+  </div>
+</div>
+
+    <!-- Listing 2 -->
+<div class="bg-white rounded-lg shadow-sm overflow-hidden">
+  <img id="carouselThumb2" src="https://source.unsplash.com/400x300/?villa" class="w-full h-48 object-cover" alt="Listing Image" />
+  <div class="flex justify-center items-center gap-3 mt-1">
+    <button onclick="prevImage('2')" class="carousel-btn">←</button>
+    <button onclick="nextImage('2')" class="carousel-btn">→</button>
+  </div>
+  <div class="p-3">
+    <div class="flex items-center justify-between mb-1">
+      <div class="flex items-center gap-2">
+        <img src="https://i.pravatar.cc/40?img=5" class="w-7 h-7 rounded-full" alt="Host" />
+        <div class="text-xs">
+          <p class="font-semibold">Mike Landry</p>
+          <p class="text-gray-500">Mombasa</p>
+        </div>
+      </div>
+      <div class="text-yellow-500 text-xs">⭐⭐⭐⭐⭐ (12)</div>
+    </div>
+    <h3 class="font-semibold text-sm">Cozy Beach Villa</h3>
+    <p class="text-green-600 font-bold text-sm">USD 85 / night</p>
+    <div class="flex flex-wrap gap-1 mt-2 text-[11px] text-gray-700">
+      <span class="bg-gray-200 px-2 py-[2px] rounded-full">Pool</span>
+      <span class="bg-gray-200 px-2 py-[2px] rounded-full">WiFi</span>
+      <span class="bg-gray-200 px-2 py-[2px] rounded-full">Balcony</span>
+      <span class="bg-gray-200 px-2 py-[2px] rounded-full">Air Conditioning</span>
+    </div>
+    <button onclick="bookNow('Cozy Beach Villa', 85, 'Mombasa')" class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white text-sm py-1.5 rounded-md">Book Now</button>
+  </div>
+</div>
+
+    <!-- Listing 3 -->
+<div class="bg-white rounded-lg shadow-sm overflow-hidden max-w-sm mx-auto">
+  <!-- Main Image -->
+  <img
+    id="carouselThumb3"
+    src="IMG-20250517-WA0016.jpg"
+    class="w-full h-48 object-cover"
+    alt="Listing Image"
+  />
+
+  <!-- Thumbnails -->
+  <div class="flex justify-center items-center gap-2 mt-2 overflow-x-auto">
+    <img src="IMG-20250517-WA0016.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 1" onclick="document.getElementById('carouselThumb3').src=this.src" />
+    <img src="IMG-20250517-WA0010.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 2" onclick="document.getElementById('carouselThumb3').src=this.src" />
+    <img src="IMG-20250517-WA0007.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 3" onclick="document.getElementById('carouselThumb3').src=this.src" />
+    <img src="IMG-20250517-WA0012.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 4" onclick="document.getElementById('carouselThumb3').src=this.src" />
+    <img src="IMG-20250517-WA0017.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 5" onclick="document.getElementById('carouselThumb3').src=this.src" />
+    <img src="IMG-20250517-WA0014.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 6" onclick="document.getElementById('carouselThumb3').src=this.src" />
+    <img src="IMG-20250517-WA0011.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 7" onclick="document.getElementById('carouselThumb3').src=this.src" />
+    <img src="IMG-20250517-WA0013.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 8" onclick="document.getElementById('carouselThumb3').src=this.src" />
+    <img src="IMG-20250517-WA0009.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 9" onclick="document.getElementById('carouselThumb3').src=this.src" />
+    <img src="IMG-20250517-WA0018.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 10" onclick="document.getElementById('carouselThumb3').src=this.src" />
+    <img src="IMG-20250517-WA0008.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" alt="Thumb 11" onclick="document.getElementById('carouselThumb3').src=this.src" />
+  </div>
+
+  <div class="p-3">
+    <div class="flex items-center justify-between mb-1">
+      <div class="flex items-center gap-2">
+        <!-- Host image -->
+        <img
+          src="IMG-20250520-WA0040.jpg"
+          class="w-7 h-7 rounded-full object-cover"
+          alt="Host"
+        />
+        <div class="text-xs">
+          <p class="font-semibold">Caroline Muthoni</p>
+          <p class="text-gray-500">Runda Estate</p>
+        </div>
+      </div>
+      <div class="text-yellow-500 text-xs">
+        ⭐⭐⭐⭐ (18)
+        <a href="#" 
+          class="text-blue-600 underline ml-2 review-trigger" 
+          data-listing="Rustic Bogani Luxury" 
+          data-host="Caroline Muthoni">
+          View Reviews
+        </a>
+      </div>
+    </div>
+    <h3 class="font-semibold text-sm">Rustic Luxury</h3>
+    <p class="text-green-600 font-bold text-sm">USD 120 / night</p>
+    <div class="flex flex-wrap gap-1 mt-2 text-[11px] text-gray-700">
+      <span class="bg-gray-200 px-2 py-[2px] rounded-full">Fireplace</span>
+      <span class="bg-gray-200 px-2 py-[2px] rounded-full">Kitchen</span>
+      <span class="bg-gray-200 px-2 py-[2px] rounded-full">Parking</span>
+    </div>
+    <button
+      onclick="bookNow('Rustic Bogani Luxury', 120, 'Runda Estate')"
+      class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white text-sm py-1.5 rounded-md"
+    >
+      Book Now
+    </button>
+  </div>
+</div>
+
 <!-- Listing 4 -->
 <div class="bg-white rounded-lg shadow-sm overflow-hidden max-w-sm mx-auto">
   <!-- Main Image -->
@@ -189,6 +357,44 @@
   </div>
 </div>
 
+<!-- Listing 6 -->
+<div class="bg-white rounded-lg shadow-sm overflow-hidden max-w-sm mx-auto">
+  <img id="carouselThumb6" src="IMG-20250517-WA0013.jpg" class="w-full h-48 object-cover" alt="Listing Image" />
+  <div class="flex justify-center items-center gap-2 mt-2 overflow-x-auto">
+    <img src="IMG-20250517-WA0013.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" onclick="document.getElementById('carouselThumb6').src=this.src" />
+    <img src="IMG-20250517-WA0014.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" onclick="document.getElementById('carouselThumb6').src=this.src" />
+    <img src="IMG-20250517-WA0015.jpg" class="w-16 h-12 object-cover rounded cursor-pointer" onclick="document.getElementById('carouselThumb6').src=this.src" />
+  </div>
+  <div class="p-3">
+    <div class="flex items-center justify-between mb-1">
+      <div class="flex items-center gap-2">
+        <img src="IMG-20250509-WA0012.jpg" class="w-7 h-7 rounded-full object-cover" alt="Host" />
+        <div class="text-xs">
+          <p class="font-semibold">Brian Okoth</p>
+          <p class="text-gray-500">Lavington</p>
+        </div>
+      </div>
+      <div class="text-yellow-500 text-xs">
+        ⭐⭐⭐⭐⭐ (45)
+        <a href="#" class="text-blue-600 underline ml-2 review-trigger" data-listing="Lavington Skyline" data-host="Brian Okoth">View Reviews</a>
+      </div>
+    </div>
+    <h3 class="font-semibold text-sm">Lavington Skyline</h3>
+    <p class="text-green-600 font-bold text-sm">USD 110 / night</p>
+    <div class="flex flex-wrap gap-1 mt-2 text-[11px] text-gray-700">
+      <span class="bg-gray-200 px-2 py-[2px] rounded-full">Smart TV</span>
+      <span class="bg-gray-200 px-2 py-[2px] rounded-full">Jacuzzi</span>
+      <span class="bg-gray-200 px-2 py-[2px] rounded-full">Secure Parking</span>
+    </div>
+    <button onclick="bookNow('Lavington Skyline', 110, 'Lavington')" class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white text-sm py-1.5 rounded-md">Book Now</button>
+  </div>
+</div>
+
+<!-- Listing 7 -->
+<!-- Repeat structure with changes -->
+<!-- ... Add 7 to 14 following the same pattern above ... -->
+
+
   </main>
 
   <!-- Review Modal -->
@@ -200,180 +406,182 @@
   </div>
 </div>
 
+ <!-- Booking Page Redirect Logic -->
 <script>
- <script>
-  // Booking redirect logic
   function bookNow(name, price, location) {
-    const userName = document.getElementById("userName")?.textContent || "";
-    const userEmail = document.getElementById("userEmail")?.textContent || "";
+    const userName = document.getElementById("userName").textContent;
+    const userEmail = document.getElementById("userEmail").textContent;
     const url = `book.html?listing=${encodeURIComponent(name)}&price=${price}&location=${encodeURIComponent(location)}&user=${encodeURIComponent(userName)}&email=${encodeURIComponent(userEmail)}`;
     window.location.href = url;
   }
 
-  // Object to store listings and image arrays + current index for carousel
-  const listingsCarousel = {};
-  let lastListingId = 0;
+  // Carousel logic: separate for each listing
+  const listings = {
+    1: {
+      images: [
+        "https://source.unsplash.com/400x300/?apartment",
+        "https://source.unsplash.com/400x300/?room",
+        "https://source.unsplash.com/400x300/?villa"
+      ],
+      index: 0
+    },
+    2: {
+      images: [
+        "https://source.unsplash.com/400x300/?balcony",
+        "https://source.unsplash.com/400x300/?living-room",
+        "https://source.unsplash.com/400x300/?kitchen"
+      ],
+      index: 0
+    },
+    3: {
+      images: [
+        "IMG-20250517-WA0016.jpg",
+        "IMG-20250517-WA0010.jpg",
+        "IMG-20250517-WA0007.jpg",
+        "IMG-20250517-WA0012.jpg",
+        "IMG-20250517-WA0017.jpg",
+        "IMG-20250517-WA0014.jpg",
+        "IMG-20250517-WA0011.jpg",
+        "IMG-20250517-WA0013.jpg",
+        "IMG-20250517-WA0009.jpg",
+        "IMG-20250517-WA0018.jpg",
+        "IMG-20250517-WA0008.jpg"
+      ],
+      index: 0
+    },
+    3: {
+      images: [
+        "IMG-20250517-WA0016.jpg",
+        "IMG-20250517-WA0010.jpg",
+        "IMG-20250517-WA0007.jpg",
+        "IMG-20250517-WA0012.jpg",
+        "IMG-20250517-WA0017.jpg",
+        "IMG-20250517-WA0014.jpg",
+        "IMG-20250517-WA0011.jpg",
+        "IMG-20250517-WA0013.jpg",
+        "IMG-20250517-WA0009.jpg",
+        "IMG-20250517-WA0018.jpg",
+        "IMG-20250517-WA0008.jpg"
+      ],
+      index: 0
+    }
+  };
 
-  // Update carousel image for a listing
   function updateImage(listingId) {
-    const listing = listingsCarousel[listingId];
+    const listing = listings[listingId];
     if (!listing) return;
     const img = document.getElementById(`carouselThumb${listingId}`);
     if (img) img.src = listing.images[listing.index];
   }
 
-  // Carousel next image
   function nextImage(listingId) {
-    const listing = listingsCarousel[listingId];
+    const listing = listings[listingId];
     if (!listing) return;
     listing.index = (listing.index + 1) % listing.images.length;
     updateImage(listingId);
   }
 
-  // Carousel previous image
   function prevImage(listingId) {
-    const listing = listingsCarousel[listingId];
+    const listing = listings[listingId];
     if (!listing) return;
     listing.index = (listing.index - 1 + listing.images.length) % listing.images.length;
     updateImage(listingId);
   }
+</script>
 
-  // Review modal open & close logic
+<script>
+  // On page load, fetch logged in user data from localStorage
   document.addEventListener('DOMContentLoaded', () => {
-    // Populate logged-in user info if available
     const user = JSON.parse(localStorage.getItem('novaLoggedIn'));
     if (user) {
       const userNameElem = document.getElementById('userName');
       const userEmailElem = document.getElementById('userEmail');
-      if (userNameElem) userNameElem.textContent = user.name;
-      if (userEmailElem) userEmailElem.textContent = user.email;
-    }
-
-    // Review triggers
-    document.querySelectorAll('.review-trigger').forEach(button => {
-      button.addEventListener('click', e => {
-        e.preventDefault();
-        const listing = button.dataset.listing || '';
-        const host = button.dataset.host || '';
-        const message = `
-          Your email has not yet made any booking with <strong>${listing}</strong>.<br>
-          Only users who have been hosted by <strong>${host}</strong> can leave a review within 72hrs after check-out.
-        `;
-        const modalMessage = document.getElementById('reviewModalMessage');
-        if (modalMessage) modalMessage.innerHTML = message;
-        const modal = document.getElementById('reviewModal');
-        if (modal) modal.classList.remove('hidden');
-      });
-    });
-
-    const closeReviewBtn = document.getElementById('closeReviewModal');
-    if (closeReviewBtn) {
-      closeReviewBtn.addEventListener('click', () => {
-        const modal = document.getElementById('reviewModal');
-        if (modal) modal.classList.add('hidden');
-      });
+      if (userNameElem && userEmailElem) {
+        userNameElem.textContent = user.name;
+        userEmailElem.textContent = user.email;
+      }
     }
   });
-
-  // IndexedDB open
-  function openDB() {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open("NovaStaysDB", 1);
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => resolve(request.result);
-      request.onupgradeneeded = (e) => {
-        const db = e.target.result;
-        if (!db.objectStoreNames.contains("listings")) {
-          db.createObjectStore("listings", { keyPath: "id", autoIncrement: true });
-        }
-      };
-    });
-  }
-
-  // Get all listings from IndexedDB
-  async function getAllListings() {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction("listings", "readonly");
-      const store = tx.objectStore("listings");
-      const request = store.getAll();
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  }
-
-  // Render all listings dynamically into container
-  async function renderListings() {
-    const listings = await getAllListings();
-    const container = document.getElementById("listingsContainer");
-    if (!container) return;
-
-    container.innerHTML = "";
-
-    if (listings.length === 0) {
-      container.innerHTML = "<p class='text-center text-gray-600'>No listings found.</p>";
-      return;
-    }
-
-    listings.forEach(listing => {
-      lastListingId = Math.max(lastListingId, listing.id);
-
-      listingsCarousel[listing.id] = {
-        images: listing.images || [],
-        index: 0
-      };
-
-      // Amenities badges
-      const amenitiesHtml = (listing.features || []).map(am => `<span class="bg-gray-200 px-2 py-1 rounded-full text-xs">${am}</span>`).join(' ');
-
-      // Build listing card HTML (adjust classes per your CSS)
-      const cardHtml = `
-        <div class="bg-white rounded-lg shadow-md overflow-hidden" id="listingCard${listing.id}">
-          <div class="relative h-48 w-full overflow-hidden rounded-t-lg">
-            <img id="carouselThumb${listing.id}" src="${listing.images?.[0] || 'https://via.placeholder.com/400x300?text=No+Image'}" alt="${listing.listingName || 'Listing'}" class="object-cover w-full h-full" />
-            <div class="absolute top-2 right-2 flex gap-2">
-              <button onclick="prevImage(${listing.id})" class="bg-white bg-opacity-70 rounded px-2 py-1 hover:bg-opacity-100">←</button>
-              <button onclick="nextImage(${listing.id})" class="bg-white bg-opacity-70 rounded px-2 py-1 hover:bg-opacity-100">→</button>
-            </div>
-          </div>
-          <div class="p-4">
-            <h3 class="text-lg font-semibold">${listing.listingName || 'No Name'}</h3>
-            <p class="text-gray-600">${listing.location || 'No Location'}</p>
-            <p class="font-bold text-green-600 mt-1">KES ${listing.pricePerNight || 'N/A'} / night</p>
-            <p class="mt-2 text-sm text-gray-700">Hosted by: ${listing.hostName || 'Unknown'}</p>
-            <div class="flex flex-wrap gap-1 mt-2">${amenitiesHtml}</div>
-            <button onclick="bookNow('${listing.listingName || ''}', ${listing.pricePerNight || 0}, '${listing.location || ''}')" class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2 rounded-md">Book Now</button>
-          </div>
-        </div>
-      `;
-      container.insertAdjacentHTML("beforeend", cardHtml);
-    });
-  }
-
-  // Listen for new listings broadcast and re-render
-  const channel = new BroadcastChannel('nova-listings');
-  channel.onmessage = (event) => {
-    if (event.data === 'new-listing-added') {
-      console.log("New listing added — refreshing...");
-      renderListings();
-    }
-  };
-
-  // Run initial render on DOM ready
-  document.addEventListener("DOMContentLoaded", renderListings);
 </script>
 
- <!-- Footer -->
-  <footer class="bg-white border-t mt-12">
-    <footer class="fixed bottom-0 left-0 w-full bg-white text-center py-4 text-gray-500 text-sm z-50 shadow">
-      <p>&copy; 2025 Nova Prime. All rights reserved.</p>
-      <div class="space-x-4">
-        <a href="privacy.html" class="hover:text-green-600">Privacy</a>
-        <a href="terms.html" class="hover:text-green-600">Terms</a>
-        <a href="host.html" class="hover:text-green-600">Help</a>
-      </div>
-    </div>
-  </footer>
-    
+<script>
+  // Handle review modal trigger
+  document.querySelectorAll('.review-trigger').forEach(button => {
+    button.addEventListener('click', function (e) {
+      e.preventDefault();
+      const listing = this.dataset.listing;
+      const host = this.dataset.host;
+      const message = `
+        Your email has not yet made any booking with <strong>${listing}</strong>.<br>
+        Only users who have been hosted by <strong>${host}</strong> are allowed to leave a review within 72hrs after check-out.
+      `;
+      document.getElementById('reviewModalMessage').innerHTML = message;
+      document.getElementById('reviewModal').classList.remove('hidden');
+    });
+  });
+
+  // Close modal
+  document.getElementById('closeReviewModal').addEventListener('click', () => {
+    document.getElementById('reviewModal').classList.add('hidden');
+  });
+</script>
+
+  <script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const listings = JSON.parse(localStorage.getItem('novaListings') || '[]');
+    const container = document.querySelector('main');
+
+    listings.forEach((listing, index) => {
+      const featureBadges = listing.features.map(f =>
+        `<span class="bg-gray-200 px-2 py-[2px] rounded-full text-[11px]">${f}</span>`
+      ).join(' ');
+
+      const card = document.createElement('div');
+      card.className = 'bg-white rounded-lg shadow-sm overflow-hidden';
+
+      card.innerHTML = `
+        <!-- Thumbnail -->
+        <img src="${listing.image}" class="w-full h-48 object-cover" alt="Listing Image" />
+
+        <!-- Carousel Buttons (non-functional for now) -->
+        <div class="flex justify-center items-center gap-3 mt-1">
+          <button class="carousel-btn">←</button>
+          <button class="carousel-btn">→</button>
+        </div>
+
+        <!-- Details -->
+        <div class="p-3">
+          <div class="flex items-center justify-between mb-1">
+            <div class="flex items-center gap-2">
+              <img src="${listing.hostAvatar}" class="w-7 h-7 rounded-full" alt="Host" />
+              <div class="text-xs">
+                <p class="font-semibold">${listing.hostName}</p>
+                <p class="text-gray-500">${listing.location}</p>
+              </div>
+            </div>
+            <div class="text-yellow-500 text-xs">${listing.rating}</div>
+          </div>
+
+          <h3 class="font-semibold text-sm">${listing.title}</h3>
+          <p class="text-green-600 font-bold text-sm">USD ${listing.price} / night</p>
+
+          <div class="flex flex-wrap gap-1 mt-2 text-[11px] text-gray-700">
+            ${featureBadges}
+          </div>
+
+          <button onclick="bookNow('${listing.title}', ${listing.price}, '${listing.location}')" class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white text-sm py-1.5 rounded-md">Book Now</button>
+        </div>
+      `;
+
+      container.appendChild(card);
+    });
+  });
+
+  function bookNow(title, price, location) {
+    alert(`Booking ${title} in ${location} at $${price}/night`);
+  }
+</script>
+
+
 </body>
 </html>
