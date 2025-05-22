@@ -39,8 +39,8 @@
       <input type="number" name="price" placeholder="Price per night (USD)" class="w-full border px-3 py-2 rounded-md" required>
       <input type="text" name="hostName" placeholder="Your Name" class="w-full border px-3 py-2 rounded-md" required>
 
-      <label class="block text-sm font-semibold mt-4 text-gray-700">Upload Listing Image</label>
-      <input type="file" id="listingImage" accept="image/*" class="w-full border px-3 py-2 rounded-md" required>
+      <label class="block text-sm font-semibold mt-4 text-gray-700">Upload Listing Images (multiple)</label>
+      <input type="file" id="listingImages" accept="image/*" multiple class="w-full border px-3 py-2 rounded-md" required>
 
       <label class="block text-sm font-semibold mt-4 text-gray-700">Upload Host Avatar</label>
       <input type="file" id="hostAvatar" accept="image/*" class="w-full border px-3 py-2 rounded-md" required>
@@ -66,49 +66,57 @@
   <script>
     const form = document.getElementById('hostForm');
 
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
+    }
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const listingFile = document.getElementById('listingImage').files[0];
+      const listingFiles = [...document.getElementById('listingImages').files];
       const avatarFile = document.getElementById('hostAvatar').files[0];
 
-      if (!listingFile || !avatarFile) {
-        return alert("Please upload both listing image and host avatar.");
+      if (!listingFiles.length || !avatarFile) {
+        return alert("Please upload listing images and a host avatar.");
       }
 
-      const reader1 = new FileReader();
-      const reader2 = new FileReader();
+      try {
+        // Read all listing images as base64 strings
+        const listingImages = await Promise.all(listingFiles.map(file => readFileAsDataURL(file)));
+        // Read host avatar as base64 string
+        const hostAvatar = await readFileAsDataURL(avatarFile);
 
-      reader1.readAsDataURL(listingFile);
-      reader2.readAsDataURL(avatarFile);
+        const features = [...form.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
 
-      reader1.onload = function () {
-        const listingImage = reader1.result;
-
-        reader2.onload = function () {
-          const hostAvatar = reader2.result;
-
-          const features = [...form.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
-
-          const listing = {
-            title: form.title.value,
-            location: form.location.value,
-            price: form.price.value,
-            image: listingImage,
-            hostName: form.hostName.value,
-            hostAvatar: hostAvatar,
-            features,
-            rating: "⭐⭐⭐⭐☆ (New)"
-          };
-
-          const existing = JSON.parse(localStorage.getItem('novaListings') || '[]');
-          existing.push(listing);
-          localStorage.setItem('novaListings', JSON.stringify(existing));
-
-          alert('Property listed successfully!');
-          window.location.href = 'listings.html';
+        // Create listing object
+        const listing = {
+          id: Date.now(),  // unique id for listing
+          title: form.title.value,
+          location: form.location.value,
+          price: Number(form.price.value),
+          images: listingImages,
+          hostName: form.hostName.value,
+          hostAvatar: hostAvatar,
+          features,
+          rating: "⭐⭐⭐⭐☆ (New)",
+          bookings: [] // empty bookings initially
         };
-      };
+
+        const existing = JSON.parse(localStorage.getItem('novaListings') || '[]');
+        existing.push(listing);
+        localStorage.setItem('novaListings', JSON.stringify(existing));
+
+        alert('Property listed successfully!');
+        window.location.href = 'hostportal.html';  // redirect to host portal page
+
+      } catch (error) {
+        alert("Error uploading images: " + error);
+      }
     });
   </script>
 
