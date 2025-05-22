@@ -201,262 +201,81 @@
 </div>
 
 <script>
+ <script>
   // Booking redirect logic
   function bookNow(name, price, location) {
-    const userName = document.getElementById("userName").textContent;
-    const userEmail = document.getElementById("userEmail").textContent;
+    const userName = document.getElementById("userName")?.textContent || "";
+    const userEmail = document.getElementById("userEmail")?.textContent || "";
     const url = `book.html?listing=${encodeURIComponent(name)}&price=${price}&location=${encodeURIComponent(location)}&user=${encodeURIComponent(userName)}&email=${encodeURIComponent(userEmail)}`;
     window.location.href = url;
   }
 
-  // Object to store listings and their image arrays + current index for carousel
-  const listings = {
-    1: {
-      images: [
-        "https://source.unsplash.com/400x300/?apartment",
-        "https://source.unsplash.com/400x300/?room",
-        "https://source.unsplash.com/400x300/?villa"
-      ],
-      index: 0
-    },
-    2: {
-      images: [
-        "https://source.unsplash.com/400x300/?balcony",
-        "https://source.unsplash.com/400x300/?living-room",
-        "https://source.unsplash.com/400x300/?kitchen"
-      ],
-      index: 0
-    },
-    3: {
-      images: [
-        "IMG-20250517-WA0016.jpg",
-        "IMG-20250517-WA0010.jpg",
-        "IMG-20250517-WA0007.jpg",
-        "IMG-20250517-WA0012.jpg",
-        "IMG-20250517-WA0017.jpg",
-        "IMG-20250517-WA0014.jpg",
-        "IMG-20250517-WA0011.jpg",
-        "IMG-20250517-WA0013.jpg",
-        "IMG-20250517-WA0009.jpg",
-        "IMG-20250517-WA0018.jpg",
-        "IMG-20250517-WA0008.jpg"
-      ],
-      index: 0
-    }
-  };
+  // Object to store listings and image arrays + current index for carousel
+  const listingsCarousel = {};
+  let lastListingId = 0;
 
-  // Track last listing ID used, to assign new IDs incrementally
-  let lastListingId = Object.keys(listings).length;
-
-  // Update image displayed for a given listing ID
+  // Update carousel image for a listing
   function updateImage(listingId) {
-    const listing = listings[listingId];
+    const listing = listingsCarousel[listingId];
     if (!listing) return;
     const img = document.getElementById(`carouselThumb${listingId}`);
     if (img) img.src = listing.images[listing.index];
   }
 
-  // Next image button handler
+  // Carousel next image
   function nextImage(listingId) {
-    const listing = listings[listingId];
+    const listing = listingsCarousel[listingId];
     if (!listing) return;
     listing.index = (listing.index + 1) % listing.images.length;
     updateImage(listingId);
   }
 
-  // Previous image button handler
+  // Carousel previous image
   function prevImage(listingId) {
-    const listing = listings[listingId];
+    const listing = listingsCarousel[listingId];
     if (!listing) return;
     listing.index = (listing.index - 1 + listing.images.length) % listing.images.length;
     updateImage(listingId);
   }
 
-  // On page load, populate logged-in user info
+  // Review modal open & close logic
   document.addEventListener('DOMContentLoaded', () => {
+    // Populate logged-in user info if available
     const user = JSON.parse(localStorage.getItem('novaLoggedIn'));
     if (user) {
       const userNameElem = document.getElementById('userName');
       const userEmailElem = document.getElementById('userEmail');
-      if (userNameElem && userEmailElem) {
-        userNameElem.textContent = user.name;
-        userEmailElem.textContent = user.email;
-      }
+      if (userNameElem) userNameElem.textContent = user.name;
+      if (userEmailElem) userEmailElem.textContent = user.email;
     }
-  });
 
-  // Review modal trigger & close handlers
-  document.addEventListener('DOMContentLoaded', () => {
+    // Review triggers
     document.querySelectorAll('.review-trigger').forEach(button => {
-      button.addEventListener('click', function (e) {
+      button.addEventListener('click', e => {
         e.preventDefault();
-        const listing = this.dataset.listing;
-        const host = this.dataset.host;
+        const listing = button.dataset.listing || '';
+        const host = button.dataset.host || '';
         const message = `
           Your email has not yet made any booking with <strong>${listing}</strong>.<br>
-          Only users who have been hosted by <strong>${host}</strong> are allowed to leave a review within 72hrs after check-out.
+          Only users who have been hosted by <strong>${host}</strong> can leave a review within 72hrs after check-out.
         `;
-        document.getElementById('reviewModalMessage').innerHTML = message;
-        document.getElementById('reviewModal').classList.remove('hidden');
+        const modalMessage = document.getElementById('reviewModalMessage');
+        if (modalMessage) modalMessage.innerHTML = message;
+        const modal = document.getElementById('reviewModal');
+        if (modal) modal.classList.remove('hidden');
       });
     });
 
-    document.getElementById('closeReviewModal').addEventListener('click', () => {
-      document.getElementById('reviewModal').classList.add('hidden');
-    });
+    const closeReviewBtn = document.getElementById('closeReviewModal');
+    if (closeReviewBtn) {
+      closeReviewBtn.addEventListener('click', () => {
+        const modal = document.getElementById('reviewModal');
+        if (modal) modal.classList.add('hidden');
+      });
+    }
   });
 
-  // Dynamically add a new listing to the DOM and listings object
-  function addListing(listingData) {
-    // listingData = {
-    //   hostName, hostAvatarUrl, hostLocation, hostRating, hostReviewCount,
-    //   propertyName, propertyPrice, propertyLocation,
-    //   propertyAmenities: [], propertyImages: []
-    // }
-
-    lastListingId++;
-    const id = lastListingId;
-
-    // Add to listings object for carousel control
-    listings[id] = {
-      images: listingData.propertyImages,
-      index: 0
-    };
-
-    // Build amenities badges HTML
-    const amenitiesHtml = listingData.propertyAmenities.map(am => 
-      `<span class="bg-gray-200 px-2 py-[2px] rounded-full">${am}</span>`
-    ).join('');
-
-    // Create listing card element with matching structure and IDs/classes
-    const listingHTML = `
-      <div class="bg-white rounded-lg shadow-sm overflow-hidden" id="listingCard${id}">
-        <img id="carouselThumb${id}" src="${listingData.propertyImages[0]}" class="w-full h-48 object-cover" alt="Listing Image" />
-        <div class="flex justify-center items-center gap-3 mt-1">
-          <button onclick="prevImage('${id}')" class="carousel-btn">←</button>
-          <button onclick="nextImage('${id}')" class="carousel-btn">→</button>
-        </div>
-        <div class="p-3">
-          <div class="flex items-center justify-between mb-1">
-            <div class="flex items-center gap-2">
-              <img src="${listingData.hostAvatarUrl}" class="w-7 h-7 rounded-full" alt="Host" />
-              <div class="text-xs">
-                <p class="font-semibold">${listingData.hostName}</p>
-                <p class="text-gray-500">${listingData.hostLocation}</p>
-              </div>
-            </div>
-            <div class="text-yellow-500 text-xs">⭐️${listingData.hostRating} (${listingData.hostReviewCount})</div>
-          </div>
-          <h3 class="font-semibold text-sm">${listingData.propertyName}</h3>
-          <p class="text-green-600 font-bold text-sm">USD ${listingData.propertyPrice} / night</p>
-          <div class="flex flex-wrap gap-1 mt-2 text-[11px] text-gray-700">${amenitiesHtml}</div>
-          <button onclick="bookNow('${listingData.propertyName}', ${listingData.propertyPrice}, '${listingData.propertyLocation}')" class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white text-sm py-1.5 rounded-md">Book Now</button>
-        </div>
-      </div>
-    `;
-
-    // Append the new listing after all existing listings in main container
-    const listingsContainer = document.querySelector('main.max-w-6xl');
-    if (listingsContainer) {
-      listingsContainer.insertAdjacentHTML('beforeend', listingHTML);
-    }
-  }
-
-  // Example usage: 
-  // addListing({
-  //   hostName: 'New Host',
-  //   hostAvatarUrl: 'https://i.pravatar.cc/40?img=12',
-  //   hostLocation: 'Nakuru',
-  //   hostRating: '4.5',
-  //   hostReviewCount: '5',
-  //   propertyName: 'New Cozy Cottage',
-  //   propertyPrice: 55,
-  //   propertyLocation: 'Nakuru',
-  //   propertyAmenities: ['WiFi', 'Parking', 'Breakfast'],
-  //   propertyImages: [
-  //     'https://source.unsplash.com/400x300/?cottage1',
-  //     'https://source.unsplash.com/400x300/?cottage2',
-  //     'https://source.unsplash.com/400x300/?cottage3'
-  //   ]
-  // });
-</script>
-<script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const container = document.getElementById('listingsContainer'); // Adjust ID if different
-    const listings = JSON.parse(localStorage.getItem('novaListings') || '[]');
-
-    if (!container) {
-      console.error('Container with ID "listingsContainer" not found.');
-      return;
-    }
-
-    if (listings.length === 0) {
-      container.innerHTML = '<p class="text-gray-600 text-center">No listings found.</p>';
-      return;
-    }
-
-    container.innerHTML = ''; // Clear existing content
-
-    listings.forEach((listing, index) => {
-      const card = document.createElement('div');
-      card.className = 'bg-white shadow-md rounded-lg p-4 mb-4';
-
-      card.innerHTML = `
-        <div class="flex items-center gap-4">
-          <img src="${listing.image}" alt="Listing Image" class="w-32 h-32 object-cover rounded-md">
-          <div class="flex-1">
-            <h2 class="text-xl font-semibold text-green-700">${listing.title}</h2>
-            <p class="text-gray-600"><strong>Location:</strong> ${listing.location}</p>
-            <p class="text-gray-600"><strong>Price:</strong> $${listing.price}/night</p>
-            <p class="text-gray-600"><strong>Host:</strong> ${listing.hostName}</p>
-            <p class="text-gray-600"><strong>Features:</strong> ${listing.features.join(', ')}</p>
-            <p class="text-yellow-500">${listing.rating}</p>
-          </div>
-        </div>
-      `;
-
-      container.appendChild(card);
-    });
-  });
-</script>
- <script>
-  // Function to load listings from localStorage and render them
-  function loadListings() {
-    const listings = JSON.parse(localStorage.getItem('nova_listings')) || [];
-    const container = document.getElementById('listings-container'); // your container id for listings
-
-    // Clear existing content if any
-    container.innerHTML = '';
-
-    listings.forEach(listing => {
-      // Create the HTML structure for each listing
-      // Adjust classes and structure to match your existing design exactly
-      
-      const listingDiv = document.createElement('div');
-      listingDiv.className = "listing-card bg-white rounded-lg shadow-md overflow-hidden mb-6";
-
-      // Example inner HTML - adapt to your actual listing card markup
-      listingDiv.innerHTML = `
-        <div class="relative h-48 w-full overflow-hidden rounded-t-lg">
-          <img src="${listing.images[0]}" alt="${listing.listingName}" class="object-cover w-full h-full" />
-        </div>
-        <div class="p-4">
-          <h2 class="text-xl font-semibold text-gray-900 mb-1">${listing.listingName}</h2>
-          <p class="text-gray-700">${listing.location}</p>
-          <p class="mt-2 font-bold text-blue-600">KES ${listing.pricePerNight} / night</p>
-          <p class="mt-2 text-sm text-gray-500">Hosted by: ${listing.hostName}</p>
-        </div>
-      `;
-
-      container.appendChild(listingDiv);
-    });
-  }
-
-  // Run on page load
-  document.addEventListener('DOMContentLoaded', loadListings);
-</script>
-<script>
-  // Open IndexedDB database
+  // IndexedDB open
   function openDB() {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open("NovaStaysDB", 1);
@@ -465,7 +284,7 @@
       request.onupgradeneeded = (e) => {
         const db = e.target.result;
         if (!db.objectStoreNames.contains("listings")) {
-          db.createObjectStore("listings", { keyPath: "id" });
+          db.createObjectStore("listings", { keyPath: "id", autoIncrement: true });
         }
       };
     });
@@ -483,70 +302,66 @@
     });
   }
 
-  // Render listings to container
+  // Render all listings dynamically into container
   async function renderListings() {
     const listings = await getAllListings();
-
-    if (!listings.length) return;
-
     const container = document.getElementById("listingsContainer");
-    if (!container) {
-      console.warn("No container with id 'listingsContainer' found.");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    if (listings.length === 0) {
+      container.innerHTML = "<p class='text-center text-gray-600'>No listings found.</p>";
       return;
     }
 
-    container.innerHTML = ""; // Clear previous listings
+    listings.forEach(listing => {
+      lastListingId = Math.max(lastListingId, listing.id);
 
-    listings.forEach((listing) => {
-      const featuresHtml = listing.features.map(f => `<span class="badge bg-success me-1">${f}</span>`).join("");
+      listingsCarousel[listing.id] = {
+        images: listing.images || [],
+        index: 0
+      };
 
-      const imagesHtml = listing.images
-        .slice(0, 3)
-        .map(img => `<img src="${img}" alt="${listing.title}" class="rounded me-2" style="width:80px; height:60px; object-fit: cover;">`)
-        .join("");
+      // Amenities badges
+      const amenitiesHtml = (listing.features || []).map(am => `<span class="bg-gray-200 px-2 py-1 rounded-full text-xs">${am}</span>`).join(' ');
 
-      const listingHtml = `
-        <div class="card mb-3 shadow-sm">
-          <div class="row g-0">
-            <div class="col-md-4">
-              <img src="${listing.images[0]}" class="img-fluid rounded-start" alt="${listing.title}">
+      // Build listing card HTML (adjust classes per your CSS)
+      const cardHtml = `
+        <div class="bg-white rounded-lg shadow-md overflow-hidden" id="listingCard${listing.id}">
+          <div class="relative h-48 w-full overflow-hidden rounded-t-lg">
+            <img id="carouselThumb${listing.id}" src="${listing.images?.[0] || 'https://via.placeholder.com/400x300?text=No+Image'}" alt="${listing.listingName || 'Listing'}" class="object-cover w-full h-full" />
+            <div class="absolute top-2 right-2 flex gap-2">
+              <button onclick="prevImage(${listing.id})" class="bg-white bg-opacity-70 rounded px-2 py-1 hover:bg-opacity-100">←</button>
+              <button onclick="nextImage(${listing.id})" class="bg-white bg-opacity-70 rounded px-2 py-1 hover:bg-opacity-100">→</button>
             </div>
-            <div class="col-md-8">
-              <div class="card-body">
-                <h5 class="card-title">${listing.title}</h5>
-                <p class="card-text"><small class="text-muted">${listing.location} - $${listing.price} per night</small></p>
-                <p>${featuresHtml}</p>
-                <p class="mb-1"><strong>Host:</strong> ${listing.hostName}</p>
-                <p>${listing.rating || ""}</p>
-                <div class="d-flex align-items-center">
-                  ${imagesHtml}
-                </div>
-              </div>
-            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="text-lg font-semibold">${listing.listingName || 'No Name'}</h3>
+            <p class="text-gray-600">${listing.location || 'No Location'}</p>
+            <p class="font-bold text-green-600 mt-1">KES ${listing.pricePerNight || 'N/A'} / night</p>
+            <p class="mt-2 text-sm text-gray-700">Hosted by: ${listing.hostName || 'Unknown'}</p>
+            <div class="flex flex-wrap gap-1 mt-2">${amenitiesHtml}</div>
+            <button onclick="bookNow('${listing.listingName || ''}', ${listing.pricePerNight || 0}, '${listing.location || ''}')" class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2 rounded-md">Book Now</button>
           </div>
         </div>
       `;
-
-      container.insertAdjacentHTML("beforeend", listingHtml);
+      container.insertAdjacentHTML("beforeend", cardHtml);
     });
   }
 
-  // Initial render on page load
-  window.addEventListener("DOMContentLoaded", () => {
-    renderListings();
-  });
-
-  // Listen for new listing events via BroadcastChannel
+  // Listen for new listings broadcast and re-render
   const channel = new BroadcastChannel('nova-listings');
   channel.onmessage = (event) => {
     if (event.data === 'new-listing-added') {
-      console.log("New listing added - refreshing listings...");
+      console.log("New listing added — refreshing...");
       renderListings();
     }
   };
+
+  // Run initial render on DOM ready
+  document.addEventListener("DOMContentLoaded", renderListings);
 </script>
-
-
 
  <!-- Footer -->
   <footer class="bg-white border-t mt-12">
