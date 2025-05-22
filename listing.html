@@ -581,6 +581,87 @@
     alert(`Booking ${title} in ${location} at $${price}/night`);
   }
 </script>
+  <script>
+  // Open IndexedDB database
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open("NovaStaysDB", 1);
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve(request.result);
+      request.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains("listings")) {
+          db.createObjectStore("listings", { keyPath: "id", autoIncrement: true });
+        }
+      };
+    });
+  }
+
+  // Get all listings from IndexedDB
+  async function getAllListings() {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction("listings", "readonly");
+      const store = tx.objectStore("listings");
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  // Render listings into container
+  async function renderListings() {
+    const listings = await getAllListings();
+    const container = document.getElementById("listingsContainer");
+    if (!container) {
+      console.warn("No container with id 'listingsContainer' found.");
+      return;
+    }
+
+    if (!listings.length) {
+      container.innerHTML = '<p class="text-gray-600 text-center">No listings found.</p>';
+      return;
+    }
+
+    container.innerHTML = ""; // Clear previous content
+
+    listings.forEach(listing => {
+      // You can customize this HTML to match your design
+      const listingHtml = `
+        <div class="card mb-4 shadow-sm rounded-lg overflow-hidden">
+          <div class="flex">
+            <img src="${listing.images && listing.images.length ? listing.images[0] : 'https://via.placeholder.com/150'}" alt="${listing.listingName}" class="w-48 h-36 object-cover" />
+            <div class="p-4 flex-1">
+              <h3 class="font-semibold text-lg">${listing.listingName}</h3>
+              <p class="text-gray-600">${listing.location || ''}</p>
+              <p class="mt-2 font-bold text-green-600">KES ${listing.pricePerNight} / night</p>
+              <p class="text-sm text-gray-500 mt-1">Hosted by: ${listing.hostName || 'Unknown'}</p>
+              <div class="mt-2 flex gap-2 flex-wrap">
+                ${(listing.features || []).map(f => `<span class="bg-gray-200 px-2 py-1 rounded text-xs">${f}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML("beforeend", listingHtml);
+    });
+  }
+
+  // On DOM ready, load listings initially
+  document.addEventListener("DOMContentLoaded", () => {
+    renderListings();
+  });
+
+  // Listen for new listings added via BroadcastChannel
+  const channel = new BroadcastChannel('nova-listings');
+  channel.onmessage = (event) => {
+    if (event.data === 'new-listing-added') {
+      console.log("New listing added — refreshing listings...");
+      renderListings();
+    }
+  };
+</script>
+
  <!-- Footer -->
   <footer class="bg-white border-t mt-12">
     <footer class="fixed bottom-0 left-0 w-full bg-white text-center py-4 text-gray-500 text-sm z-50 shadow">
