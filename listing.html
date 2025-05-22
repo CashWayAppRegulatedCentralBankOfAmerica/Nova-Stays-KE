@@ -419,6 +419,40 @@
     });
   });
 </script>
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const listingsContainer = document.getElementById("listings-container");
+
+    // Fetch listings from localStorage
+    const listings = JSON.parse(localStorage.getItem("nova_listings")) || [];
+
+    listings.forEach((listing) => {
+      const card = document.createElement("div");
+      card.className = "bg-white rounded-2xl shadow-md overflow-hidden w-full max-w-md mx-auto mb-6";
+
+      // Only display the first image for now
+      const firstImage = listing.images?.[0] || '';
+
+      card.innerHTML = `
+        <img class="w-full h-48 object-cover" src="${firstImage}" alt="Listing Image">
+        <div class="p-4">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-xl font-semibold text-gray-800">${listing.listingName}</h2>
+            <span class="text-sm text-gray-600">Ksh ${listing.pricePerNight} / night</span>
+          </div>
+          <p class="text-sm text-gray-600 mb-2">Location: ${listing.location}</p>
+          <div class="flex items-center space-x-2 mt-2">
+            <img src="${listing.hostProfile}" class="w-8 h-8 rounded-full object-cover" alt="Host Image">
+            <span class="text-sm text-gray-700">${listing.hostName}</span>
+          </div>
+        </div>
+      `;
+
+      listingsContainer.appendChild(card);
+    });
+  });
+</script>
+
 
  <!-- Footer -->
   <footer class="bg-white border-t mt-12">
