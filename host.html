@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Host Your Property - Nova Stays KE</title>
+
+  <!-- Bootstrap (optional) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex justify-between items-start">
+    <h1 class="text-xl font-bold text-green-600">Nova Stays KE</h1>
+    <div class="text-sm text-gray-600 text-right leading-snug">
+      <span class="font-semibold">Host Portal</span><br>
+      <span>Add a New Property</span>
+    </div>
+  </header>
+
+  <!-- Form Section -->
+  <main class="max-w-xl mx-auto mt-8 p-4 bg-white shadow-md rounded-lg">
+    <h2 class="text-lg font-bold mb-4 text-green-700">List Your Property</h2>
+    <form id="hostForm" class="space-y-4">
+
+      <input type="text" name="title" placeholder="Property Title" class="w-full border px-3 py-2 rounded-md" required>
+      <input type="text" name="location" placeholder="Location (e.g. Nairobi)" class="w-full border px-3 py-2 rounded-md" required>
+      <input type="number" name="price" placeholder="Price per night (USD)" class="w-full border px-3 py-2 rounded-md" required>
+      <input type="text" name="hostName" placeholder="Your Name" class="w-full border px-3 py-2 rounded-md" required>
+
+      <label class="block text-sm font-semibold mt-4 text-gray-700">Upload Listing Image</label>
+      <input type="file" id="listingImage" accept="image/*" class="w-full border px-3 py-2 rounded-md" required>
+
+      <label class="block text-sm font-semibold mt-4 text-gray-700">Upload Host Avatar</label>
+      <input type="file" id="hostAvatar" accept="image/*" class="w-full border px-3 py-2 rounded-md" required>
+
+      <div class="mt-4">
+        <p class="font-medium text-sm mb-1">Features:</p>
+        <div class="flex flex-wrap gap-2 text-sm">
+          <label><input type="checkbox" value="WiFi"> WiFi</label>
+          <label><input type="checkbox" value="Parking"> Parking</label>
+          <label><input type="checkbox" value="TV"> TV</label>
+          <label><input type="checkbox" value="Hot Shower"> Hot Shower</label>
+          <label><input type="checkbox" value="Pool"> Pool</label>
+          <label><input type="checkbox" value="Balcony"> Balcony</label>
+          <label><input type="checkbox" value="Air Conditioning"> Air Conditioning</label>
+          <label><input type="checkbox" value="Breakfast"> Breakfast</label>
+        </div>
+      </div>
+
+      <button type="submit" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white text-sm py-2 rounded-md">Submit Property</button>
+    </form>
+  </main>
+
+  <script>
+    const form = document.getElementById('hostForm');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const listingFile = document.getElementById('listingImage').files[0];
+      const avatarFile = document.getElementById('hostAvatar').files[0];
+
+      if (!listingFile || !avatarFile) {
+        return alert("Please upload both listing image and host avatar.");
+      }
+
+      const reader1 = new FileReader();
+      const reader2 = new FileReader();
+
+      reader1.readAsDataURL(listingFile);
+      reader2.readAsDataURL(avatarFile);
+
+      reader1.onload = function () {
+        const listingImage = reader1.result;
+
+        reader2.onload = function () {
+          const hostAvatar = reader2.result;
+
+          const features = [...form.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
+
+          const listing = {
+            title: form.title.value,
+            location: form.location.value,
+            price: form.price.value,
+            image: listingImage,
+            hostName: form.hostName.value,
+            hostAvatar: hostAvatar,
+            features,
+            rating: "⭐⭐⭐⭐☆ (New)"
+          };
+
+          const existing = JSON.parse(localStorage.getItem('novaListings') || '[]');
+          existing.push(listing);
+          localStorage.setItem('novaListings', JSON.stringify(existing));
+
+          alert('Property listed successfully!');
+          window.location.href = 'listings.html';
+        };
+      };
+    });
+  </script>
+
+</body>
+</html>
