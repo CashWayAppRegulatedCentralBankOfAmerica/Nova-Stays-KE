@@ -68,6 +68,59 @@
       this.reset();
     });
   </script>
+  <script>
+  document.getElementById("submit-listing").addEventListener("click", function (e) {
+    e.preventDefault();
+
+    const hostName = document.getElementById("host-name").value.trim();
+    const pricePerNight = document.getElementById("price").value.trim();
+    const location = document.getElementById("location").value.trim();
+    const listingName = document.getElementById("listing-name").value.trim();
+    const imagesInput = document.getElementById("property-images");
+    const profileInput = document.getElementById("host-profile");
+
+    if (!hostName || !pricePerNight || !location || !listingName || imagesInput.files.length === 0 || !profileInput.files[0]) {
+      alert("Please fill out all fields and upload images.");
+      return;
+    }
+
+    // Read property images (max 20)
+    const imagePromises = Array.from(imagesInput.files).slice(0, 20).map(file => readFileAsDataURL(file));
+    // Read profile image
+    const profilePromise = readFileAsDataURL(profileInput.files[0]);
+
+    Promise.all([...imagePromises, profilePromise]).then(results => {
+      const listingImages = results.slice(0, imagePromises.length);
+      const hostProfile = results[results.length - 1];
+
+      const listingData = {
+        hostName,
+        pricePerNight,
+        location,
+        listingName,
+        images: listingImages,
+        hostProfile
+      };
+
+      const existing = JSON.parse(localStorage.getItem("nova_listings")) || [];
+      existing.push(listingData);
+      localStorage.setItem("nova_listings", JSON.stringify(existing));
+
+      // Redirect to listing.html
+      window.location.href = "listing.html";
+    });
+  });
+
+  function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => resolve(e.target.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+</script>
+
 
 </body>
 </html>
