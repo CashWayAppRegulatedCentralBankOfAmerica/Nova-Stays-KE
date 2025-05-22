@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Host Your Property - Nova Stays KE</title>
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap (optional) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/pica@8.0.0/dist/pica.min.js"></script>
 
   <style>
     html, body {
@@ -24,7 +24,7 @@
   <header class="bg-white shadow p-4 flex justify-between items-start">
     <h1 class="text-xl font-bold text-green-600">Nova Stays KE</h1>
     <div class="text-sm text-gray-600 text-right leading-snug">
-      <span class="font-semibold">Host Portal</span><br />
+      <span class="font-semibold">Host Portal</span><br>
       <span>Add a New Property</span>
     </div>
   </header>
@@ -34,189 +34,83 @@
     <h2 class="text-lg font-bold mb-4 text-green-700">List Your Property</h2>
     <form id="hostForm" class="space-y-4">
 
-      <input
-        type="text"
-        name="title"
-        placeholder="Property Title"
-        class="w-full border px-3 py-2 rounded-md"
-        required
-      />
-      <input
-        type="text"
-        name="location"
-        placeholder="Location (e.g. Nairobi)"
-        class="w-full border px-3 py-2 rounded-md"
-        required
-      />
-      <input
-        type="number"
-        name="price"
-        placeholder="Price per night (USD)"
-        class="w-full border px-3 py-2 rounded-md"
-        required
-      />
-      <input
-        type="text"
-        name="hostName"
-        placeholder="Your Name"
-        class="w-full border px-3 py-2 rounded-md"
-        required
-      />
+      <input type="text" name="title" placeholder="Property Title" class="w-full border px-3 py-2 rounded-md" required>
+      <input type="text" name="location" placeholder="Location (e.g. Nairobi)" class="w-full border px-3 py-2 rounded-md" required>
+      <input type="number" name="price" placeholder="Price per night (USD)" class="w-full border px-3 py-2 rounded-md" required>
+      <input type="text" name="hostName" placeholder="Your Name" class="w-full border px-3 py-2 rounded-md" required>
 
-      <label class="block text-sm font-semibold mt-4 text-gray-700"
-        >Upload Listing Images (up to 8)</label
-      >
-      <input
-        type="file"
-        id="listingImages"
-        accept="image/*"
-        multiple
-        class="w-full border px-3 py-2 rounded-md"
-        required
-      />
+      <label class="block text-sm font-semibold mt-4 text-gray-700">Upload Listing Image</label>
+      <input type="file" id="listingImage" accept="image/*" class="w-full border px-3 py-2 rounded-md" required>
 
-      <label class="block text-sm font-semibold mt-4 text-gray-700"
-        >Upload Host Avatar</label
-      >
-      <input
-        type="file"
-        id="hostAvatar"
-        accept="image/*"
-        class="w-full border px-3 py-2 rounded-md"
-        required
-      />
+      <label class="block text-sm font-semibold mt-4 text-gray-700">Upload Host Avatar</label>
+      <input type="file" id="hostAvatar" accept="image/*" class="w-full border px-3 py-2 rounded-md" required>
 
       <div class="mt-4">
         <p class="font-medium text-sm mb-1">Features:</p>
         <div class="flex flex-wrap gap-2 text-sm">
-          <label><input type="checkbox" value="WiFi" /> WiFi</label>
-          <label><input type="checkbox" value="Parking" /> Parking</label>
-          <label><input type="checkbox" value="TV" /> TV</label>
-          <label><input type="checkbox" value="Hot Shower" /> Hot Shower</label>
-          <label><input type="checkbox" value="Pool" /> Pool</label>
-          <label><input type="checkbox" value="Balcony" /> Balcony</label>
-          <label><input type="checkbox" value="Air Conditioning" /> Air Conditioning</label>
-          <label><input type="checkbox" value="Breakfast" /> Breakfast</label>
+          <label><input type="checkbox" value="WiFi"> WiFi</label>
+          <label><input type="checkbox" value="Parking"> Parking</label>
+          <label><input type="checkbox" value="TV"> TV</label>
+          <label><input type="checkbox" value="Hot Shower"> Hot Shower</label>
+          <label><input type="checkbox" value="Pool"> Pool</label>
+          <label><input type="checkbox" value="Balcony"> Balcony</label>
+          <label><input type="checkbox" value="Air Conditioning"> Air Conditioning</label>
+          <label><input type="checkbox" value="Breakfast"> Breakfast</label>
         </div>
       </div>
 
-      <button
-        type="submit"
-        class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white text-sm py-2 rounded-md"
-      >
-        Submit Property
-      </button>
+      <button type="submit" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white text-sm py-2 rounded-md">Submit Property</button>
     </form>
   </main>
 
   <script>
-    // IndexedDB helper functions
-    function openDB() {
-      return new Promise((resolve, reject) => {
-        const request = indexedDB.open("NovaStaysDB", 1);
-        request.onerror = () => reject(request.error);
-        request.onsuccess = () => resolve(request.result);
-        request.onupgradeneeded = (e) => {
-          const db = e.target.result;
-          if (!db.objectStoreNames.contains("listings")) {
-            db.createObjectStore("listings", { keyPath: "id" });
-          }
-        };
-      });
-    }
+    const form = document.getElementById('hostForm');
 
-    async function saveListing(listing) {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction("listings", "readwrite");
-        const store = tx.objectStore("listings");
-        const req = store.put(listing);
-        req.onsuccess = () => resolve(true);
-        req.onerror = () => reject(req.error);
-      });
-    }
-
-    // Image compression using Pica
-    async function compressImage(file, maxWidth = 800, quality = 0.7) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-
-        reader.onload = () => {
-          const img = new Image();
-          img.src = reader.result;
-
-          img.onload = async () => {
-            const canvas = document.createElement("canvas");
-            const scaleFactor = maxWidth / img.width;
-            canvas.width = maxWidth;
-            canvas.height = img.height * scaleFactor;
-
-            const pica = window.pica();
-            try {
-              const resized = await pica.resize(img, canvas);
-              const blob = await pica.toBlob(resized, "image/jpeg", quality);
-
-              const compressedReader = new FileReader();
-              compressedReader.readAsDataURL(blob);
-              compressedReader.onloadend = () => resolve(compressedReader.result);
-            } catch (err) {
-              reject(err);
-            }
-          };
-        };
-
-        reader.onerror = () => reject(reader.error);
-      });
-    }
-
-    const form = document.getElementById("hostForm");
-
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const listingFiles = [...document.getElementById("listingImages").files];
-      const avatarFile = document.getElementById("hostAvatar").files[0];
+      const listingFile = document.getElementById('listingImage').files[0];
+      const avatarFile = document.getElementById('hostAvatar').files[0];
 
-      if (!listingFiles.length || !avatarFile) {
-        return alert("Please upload listing images and a host avatar.");
+      if (!listingFile || !avatarFile) {
+        return alert("Please upload both listing image and host avatar.");
       }
 
-      if (listingFiles.length > 8) {
-        return alert("Please upload no more than 8 images.");
-      }
+      const reader1 = new FileReader();
+      const reader2 = new FileReader();
 
-      try {
-        const listingImages = await Promise.all(
-          listingFiles.map((file) => compressImage(file, 600, 0.4))
-        );
-        const hostAvatar = await compressImage(avatarFile, 300, 0.5);
+      reader1.readAsDataURL(listingFile);
+      reader2.readAsDataURL(avatarFile);
 
-        const features = [...form.querySelectorAll('input[type="checkbox"]:checked')].map(
-          (cb) => cb.value
-        );
+      reader1.onload = function () {
+        const listingImage = reader1.result;
 
-        const listing = {
-          id: Date.now(),
-          title: form.title.value,
-          location: form.location.value,
-          price: Number(form.price.value),
-          images: listingImages,
-          hostName: form.hostName.value,
-          hostAvatar: hostAvatar,
-          features,
-          rating: "⭐⭐⭐⭐☆ (New)",
-          bookings: [],
+        reader2.onload = function () {
+          const hostAvatar = reader2.result;
+
+          const features = [...form.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
+
+          const listing = {
+            title: form.title.value,
+            location: form.location.value,
+            price: form.price.value,
+            image: listingImage,
+            hostName: form.hostName.value,
+            hostAvatar: hostAvatar,
+            features,
+            rating: "⭐⭐⭐⭐☆ (New)"
+          };
+
+          const existing = JSON.parse(localStorage.getItem('novaListings') || '[]');
+          existing.push(listing);
+          localStorage.setItem('novaListings', JSON.stringify(existing));
+
+          alert('Property listed successfully!');
+          window.location.href = 'listings.html';
         };
-
-        await saveListing(listing);
-
-        alert("Property listed successfully!");
-        window.location.href = "hostportal.html";
-      } catch (error) {
-        alert("Error uploading images: " + error.message);
-      }
+      };
     });
   </script>
+
 </body>
 </html>
