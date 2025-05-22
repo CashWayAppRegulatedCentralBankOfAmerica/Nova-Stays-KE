@@ -526,5 +526,62 @@
   });
 </script>
 
+  <script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const listings = JSON.parse(localStorage.getItem('novaListings') || '[]');
+    const container = document.querySelector('main');
+
+    listings.forEach((listing, index) => {
+      const featureBadges = listing.features.map(f =>
+        `<span class="bg-gray-200 px-2 py-[2px] rounded-full text-[11px]">${f}</span>`
+      ).join(' ');
+
+      const card = document.createElement('div');
+      card.className = 'bg-white rounded-lg shadow-sm overflow-hidden';
+
+      card.innerHTML = `
+        <!-- Thumbnail -->
+        <img src="${listing.image}" class="w-full h-48 object-cover" alt="Listing Image" />
+
+        <!-- Carousel Buttons (non-functional for now) -->
+        <div class="flex justify-center items-center gap-3 mt-1">
+          <button class="carousel-btn">←</button>
+          <button class="carousel-btn">→</button>
+        </div>
+
+        <!-- Details -->
+        <div class="p-3">
+          <div class="flex items-center justify-between mb-1">
+            <div class="flex items-center gap-2">
+              <img src="${listing.hostAvatar}" class="w-7 h-7 rounded-full" alt="Host" />
+              <div class="text-xs">
+                <p class="font-semibold">${listing.hostName}</p>
+                <p class="text-gray-500">${listing.location}</p>
+              </div>
+            </div>
+            <div class="text-yellow-500 text-xs">${listing.rating}</div>
+          </div>
+
+          <h3 class="font-semibold text-sm">${listing.title}</h3>
+          <p class="text-green-600 font-bold text-sm">USD ${listing.price} / night</p>
+
+          <div class="flex flex-wrap gap-1 mt-2 text-[11px] text-gray-700">
+            ${featureBadges}
+          </div>
+
+          <button onclick="bookNow('${listing.title}', ${listing.price}, '${listing.location}')" class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white text-sm py-1.5 rounded-md">Book Now</button>
+        </div>
+      `;
+
+      container.appendChild(card);
+    });
+  });
+
+  function bookNow(title, price, location) {
+    alert(`Booking ${title} in ${location} at $${price}/night`);
+  }
+</script>
+
+
 </body>
 </html>
