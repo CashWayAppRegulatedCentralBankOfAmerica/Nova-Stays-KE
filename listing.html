@@ -586,7 +586,45 @@
   //   ]
   // });
 </script>
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('listingsContainer'); // Adjust ID if different
+    const listings = JSON.parse(localStorage.getItem('novaListings') || '[]');
 
+    if (!container) {
+      console.error('Container with ID "listingsContainer" not found.');
+      return;
+    }
+
+    if (listings.length === 0) {
+      container.innerHTML = '<p class="text-gray-600 text-center">No listings found.</p>';
+      return;
+    }
+
+    container.innerHTML = ''; // Clear existing content
+
+    listings.forEach((listing, index) => {
+      const card = document.createElement('div');
+      card.className = 'bg-white shadow-md rounded-lg p-4 mb-4';
+
+      card.innerHTML = `
+        <div class="flex items-center gap-4">
+          <img src="${listing.image}" alt="Listing Image" class="w-32 h-32 object-cover rounded-md">
+          <div class="flex-1">
+            <h2 class="text-xl font-semibold text-green-700">${listing.title}</h2>
+            <p class="text-gray-600"><strong>Location:</strong> ${listing.location}</p>
+            <p class="text-gray-600"><strong>Price:</strong> $${listing.price}/night</p>
+            <p class="text-gray-600"><strong>Host:</strong> ${listing.hostName}</p>
+            <p class="text-gray-600"><strong>Features:</strong> ${listing.features.join(', ')}</p>
+            <p class="text-yellow-500">${listing.rating}</p>
+          </div>
+        </div>
+      `;
+
+      container.appendChild(card);
+    });
+  });
+</script>
 
  <!-- Footer -->
   <footer class="bg-white border-t mt-12">
