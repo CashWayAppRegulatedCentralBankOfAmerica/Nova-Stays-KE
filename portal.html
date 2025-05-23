@@ -1,314 +1,109 @@
+<!-- Updated portal.html -->
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
   <title>Host Portal - Nova Stays KE</title>
-
-  <script src="https://cdn.tailwindcss.com"></script>
-
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      max-width: 100vw;
-      overflow-x: hidden;
-      background-color: #f9fafb;
+    .listing {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
     }
-    .green-dot {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      background: #22c55e; /* green-500 */
-      border-radius: 50%;
-      margin-left: 6px;
-      vertical-align: middle;
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
     }
-    .modal-bg {
-      background: rgba(0,0,0,0.5);
+    .modal-content {
+      background-color: white;
+      margin: 10% auto;
+      padding: 20px;
+      width: 300px;
+      border-radius: 8px;
     }
+    .btn {
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .edit-btn { background: #4e73df; color: white; }
+    .delete-btn { background: #e74a3b; color: white; }
   </style>
 </head>
-<body class="font-sans text-gray-800">
+<body>
+  <h1>Welcome to your Host Portal</h1>
+  <p><strong>Name:</strong> <span id="hostName"></span></p>
+  <p><strong>Phone:</strong> <span id="hostPhone"></span></p>
+  <p><strong>Email:</strong> <span id="hostEmail"></span></p>
 
-  <!-- Header -->
-  <header class="bg-white shadow p-4 flex justify-between items-center">
-    <h1 class="text-xl font-bold text-green-600">Nova Stays KE</h1>
-    <div class="text-right">
-      <p id="hostName" class="font-semibold"></p>
-      <p id="hostEmail" class="text-sm text-gray-600"></p>
-      <p id="hostPhone" class="text-sm text-gray-600"></p>
-    </div>
-  </header>
+  <button onclick="window.location.href='host.html?mode=add'">Add Listing</button>
 
-  <main class="max-w-5xl mx-auto mt-8 px-4">
+  <div id="listings"></div>
 
-    <!-- Listings Section -->
-    <section>
-      <h2 class="text-2xl font-bold mb-4 text-green-700">Your Listings</h2>
-      <div id="listingsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
-    </section>
+  <h2>Payments Summary</h2>
+  <div id="payments">
+    <p><strong>Total Received:</strong> <span id="totalPaid"></span></p>
+    <p><strong>Pending Payments:</strong> <span id="pendingPayments"></span></p>
+    <p><strong>Payment Method:</strong> M-Pesa</p>
+  </div>
 
-    <!-- Payments Section -->
-    <section class="mt-12 bg-white p-6 rounded-lg shadow-md">
-      <h2 class="text-2xl font-bold mb-4 text-green-700">Payment Summary</h2>
-
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
-        <div class="p-4 border rounded">
-          <p class="text-gray-500">Monthly Payment</p>
-          <p class="text-xl font-bold" id="monthlyPayment">$0.00</p>
-        </div>
-        <div class="p-4 border rounded">
-          <p class="text-gray-500">Payment Methods</p>
-          <p class="text-xl font-bold" id="paymentMethods">N/A</p>
-        </div>
-        <div class="p-4 border rounded">
-          <p class="text-gray-500">Payouts</p>
-          <p class="text-xl font-bold" id="payouts">$0.00</p>
-        </div>
-        <div class="p-4 border rounded">
-          <p class="text-gray-500">Pending Payments</p>
-          <p class="text-xl font-bold" id="pendingPayments">$0.00</p>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- Modal for edit/delete message -->
-  <div id="modal" class="hidden fixed inset-0 flex items-center justify-center modal-bg z-50">
-    <div class="bg-white p-6 rounded shadow max-w-sm text-center">
-      <p id="modalMessage" class="mb-4"></p>
-      <button id="modalClose" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded">Close</button>
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <p id="modalMessage"></p>
+      <button onclick="closeModal('editModal')">OK</button>
     </div>
   </div>
 
-  <!-- Modal for verification code -->
-  <div id="verifyModal" class="hidden fixed inset-0 flex items-center justify-center modal-bg z-50">
-    <div class="bg-white p-6 rounded shadow max-w-sm text-center">
-      <p class="mb-4">Enter Verification Code to verify your listing:</p>
-      <input id="verifyCodeInput" type="text" class="border p-2 rounded w-full mb-4" placeholder="Verification Code" />
-      <div class="flex justify-center gap-4">
-        <button id="verifySubmit" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded">Verify</button>
-        <button id="verifyCancel" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded">Cancel</button>
-      </div>
-      <p id="verifyError" class="text-red-600 mt-3 hidden">Incorrect code. Listing not yet verified.</p>
-    </div>
-  </div>
-
-<script>
-  const modal = document.getElementById('modal');
-  const modalMessage = document.getElementById('modalMessage');
-  const modalClose = document.getElementById('modalClose');
-
-  const verifyModal = document.getElementById('verifyModal');
-  const verifyCodeInput = document.getElementById('verifyCodeInput');
-  const verifySubmit = document.getElementById('verifySubmit');
-  const verifyCancel = document.getElementById('verifyCancel');
-  const verifyError = document.getElementById('verifyError');
-
-  let listings = [];
-  let currentHostEmail = null;
-  let currentHostName = null;
-  let currentHostPhone = null;
-
-  // Store listing id being verified
-  let verifyingListingId = null;
-
-  function loadHostInfo() {
-    currentHostName = localStorage.getItem('currentHostName') || "Unknown Host";
-    currentHostEmail = localStorage.getItem('currentHostEmail') || null;
-    currentHostPhone = localStorage.getItem('currentHostPhone') || "N/A";
-
-    document.getElementById('hostName').textContent = currentHostName;
-    document.getElementById('hostEmail').textContent = currentHostEmail || "No email saved";
-    document.getElementById('hostPhone').textContent = currentHostPhone;
-  }
-
-  function loadListings() {
-    try {
-      const stored = localStorage.getItem('novaStaysListings');
-      if (!stored) return [];
-      return JSON.parse(stored);
-    } catch {
-      return [];
-    }
-  }
-
-  function saveListings(newListings) {
-    localStorage.setItem('novaStaysListings', JSON.stringify(newListings));
-  }
-
-  // Show modal with message
-  function showModal(message) {
-    modalMessage.textContent = message;
-    modal.classList.remove('hidden');
-  }
-
-  function hideModal() {
-    modal.classList.add('hidden');
-  }
-
-  // Show verify modal
-  function showVerifyModal(listingId) {
-    verifyingListingId = listingId;
-    verifyCodeInput.value = '';
-    verifyError.classList.add('hidden');
-    verifyModal.classList.remove('hidden');
-    verifyCodeInput.focus();
-  }
-
-  function hideVerifyModal() {
-    verifyModal.classList.add('hidden');
-    verifyingListingId = null;
-  }
-
-  // Render listings for this host only
-  function renderListings() {
-    const container = document.getElementById('listingsContainer');
-    container.innerHTML = '';
-
-    if (!currentHostEmail) {
-      container.innerHTML = "<p class='text-red-600'>No host email found. Please login via host.html first.</p>";
-      return;
+  <script>
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
     }
 
-    // Filter listings for this host
-    const hostListings = listings.filter(l => l.hostEmail === currentHostEmail);
+    const hostName = localStorage.getItem('currentHostName');
+    const hostPhone = localStorage.getItem('currentHostPhone');
+    const hostEmail = localStorage.getItem('currentHostEmail');
 
-    if (hostListings.length === 0) {
-      container.innerHTML = "<p class='text-gray-600 italic'>No listings found for your account. Please add properties via Host Portal.</p>";
-      return;
-    }
+    document.getElementById('hostName').textContent = hostName;
+    document.getElementById('hostPhone').textContent = hostPhone;
+    document.getElementById('hostEmail').textContent = hostEmail;
 
-    hostListings.forEach(listing => {
-      const card = document.createElement('div');
-      card.className = "bg-white rounded-lg shadow p-4 flex flex-col";
+    const listings = JSON.parse(localStorage.getItem('novaStaysListings')) || [];
+    const bookings = JSON.parse(localStorage.getItem('novaStaysBookings')) || [];
 
-      // Listing title + verification status
-      const titleLine = document.createElement('div');
-      titleLine.className = "flex items-center justify-between mb-2";
+    let totalPaid = 0;
+    let pending = 0;
 
-      const title = document.createElement('h3');
-      title.textContent = listing.title;
-      title.className = "text-lg font-semibold";
+    listings.filter(l => l.email === hostEmail).forEach(l => {
+      const div = document.createElement('div');
+      div.className = 'listing';
+      div.innerHTML = `
+        <h3>${l.title}</h3>
+        <p>Location: ${l.location}</p>
+        <p>Price/Night: KES ${l.price}</p>
+        <p>Status: <strong>${l.verified ? 'Live 🟢' : 'Pending Verification'}</strong></p>
+        <button class="btn edit-btn" onclick="showModal('${l.verified ? 'Your listing is currently live. Contact support to edit.' : 'Listing not verified yet. Contact support to edit.'}')">Edit</button>
+        <button class="btn delete-btn" onclick="showModal('${l.verified ? 'Your listing is currently live. Contact support to delete.' : 'Listing not verified yet. Contact support to delete.'}')">Delete</button>
+      `;
+      document.getElementById('listings').appendChild(div);
 
-      const status = document.createElement('span');
-      status.className = listing.verificationStatus === 'live' ? 'text-green-600 font-semibold' : 'text-yellow-600 font-semibold';
-      status.textContent = listing.verificationStatus === 'live' ? 'Live' : 'Pending Verification';
-
-      if (listing.verificationStatus === 'live') {
-        const greenDot = document.createElement('span');
-        greenDot.className = 'green-dot';
-        status.appendChild(greenDot);
-      }
-
-      titleLine.appendChild(title);
-      titleLine.appendChild(status);
-
-      card.appendChild(titleLine);
-
-      // Price and Location
-      const priceLocation = document.createElement('p');
-      priceLocation.textContent = `Price: $${listing.price.toFixed(2)} / night | Location: ${listing.location}`;
-      priceLocation.className = "text-gray-700 mb-2";
-      card.appendChild(priceLocation);
-
-      // Main Image (first image)
-      if (listing.images && listing.images.length > 0) {
-        const img = document.createElement('img');
-        img.src = listing.images[0];
-        img.alt = listing.title;
-        img.className = "w-full h-48 object-cover rounded mb-4";
-        card.appendChild(img);
-      }
-
-      // Buttons container
-      const btnContainer = document.createElement('div');
-      btnContainer.className = "flex justify-between";
-
-      // Edit button
-      const editBtn = document.createElement('button');
-      editBtn.textContent = 'Edit';
-      editBtn.className = 'bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold py-1 px-3 rounded';
-      editBtn.onclick = () => {
-        if (listing.verificationStatus === 'live') {
-          showModal("Editing is restricted for verified listings. Please contact support.");
-        } else {
-          showModal("Editing is currently disabled for pending listings. Please verify first or contact support.");
-        }
-      };
-
-      // Delete button
-      const deleteBtn = document.createElement('button');
-      deleteBtn.textContent = 'Delete';
-      deleteBtn.className = 'bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded';
-      deleteBtn.onclick = () => {
-        if (listing.verificationStatus === 'live') {
-          showModal("Deleting is restricted for verified listings. Please contact support.");
-        } else {
-          showModal("Deleting is currently disabled for pending listings. Please verify first or contact support.");
-        }
-      };
-
-      // Verify button (only show if pending)
-      let verifyBtn = null;
-      if (listing.verificationStatus === 'pending') {
-        verifyBtn = document.createElement('button');
-        verifyBtn.textContent = 'Verify';
-        verifyBtn.className = 'bg-green-600 hover:bg-green-700 text-white font-semibold py-1 px-3 rounded';
-        verifyBtn.onclick = () => showVerifyModal(listing.id);
-      }
-
-      btnContainer.appendChild(editBtn);
-      btnContainer.appendChild(deleteBtn);
-      if (verifyBtn) btnContainer.appendChild(verifyBtn);
-
-      card.appendChild(btnContainer);
-
-      container.appendChild(card);
+      // Aggregate payments
+      bookings.filter(b => b.listingId === l.id).forEach(b => {
+        totalPaid += parseFloat(b.amount);
+      });
     });
-  }
 
-  // Handle verification submit
-  verifySubmit.addEventListener('click', () => {
-    const code = verifyCodeInput.value.trim();
-    if (code === "1234") {
-      // Mark listing as live
-      const listingIndex = listings.findIndex(l => l.id === verifyingListingId);
-      if (listingIndex !== -1) {
-        listings[listingIndex].verificationStatus = 'live';
-        saveListings(listings);
-        renderListings();
-        hideVerifyModal();
-        alert("Listing verified and is now live!");
-      }
-    } else {
-      verifyError.classList.remove('hidden');
+    document.getElementById('totalPaid').textContent = `KES ${totalPaid}`;
+    document.getElementById('pendingPayments').textContent = `KES ${pending}`;
+
+    function showModal(message) {
+      document.getElementById('modalMessage').textContent = message;
+      document.getElementById('editModal').style.display = 'block';
     }
-  });
-
-  verifyCancel.addEventListener('click', () => {
-    hideVerifyModal();
-  });
-
-  modalClose.addEventListener('click', () => {
-    hideModal();
-  });
-
-  // Initialize
-  function init() {
-    loadHostInfo();
-    listings = loadListings();
-    renderListings();
-
-    // TODO: Load real payment data or mock it here
-    document.getElementById('monthlyPayment').textContent = "$150.00";
-    document.getElementById('paymentMethods').textContent = "Bank Transfer, PayPal";
-    document.getElementById('payouts').textContent = "$1200.00";
-    document.getElementById('pendingPayments').textContent = "$300.00";
-  }
-
-  window.onload = init;
-</script>
+  </script>
 </body>
 </html>
