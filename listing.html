@@ -5,188 +5,300 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Nova Stays KE - Listings</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Simple image carousel styles */
+    .carousel-container {
+      position: relative;
+      width: 100%;
+      max-width: 350px;
+      overflow: hidden;
+      border-radius: 0.5rem;
+    }
+    .carousel-images {
+      display: flex;
+      transition: transform 0.4s ease-in-out;
+    }
+    .carousel-images img {
+      width: 100%;
+      flex-shrink: 0;
+      object-fit: cover;
+      height: 220px;
+    }
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.4);
+      color: white;
+      padding: 0.3rem 0.6rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .carousel-btn.left {
+      left: 0.5rem;
+    }
+    .carousel-btn.right {
+      right: 0.5rem;
+    }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+<body class="bg-gray-50 min-h-screen flex flex-col">
 
   <!-- Header -->
   <header class="bg-white shadow p-4 flex justify-between items-center">
     <h1 class="text-2xl font-bold text-green-600">Nova Stays KE</h1>
-    <div class="text-right">
-      <p class="font-semibold" id="userNameDisplay">Guest</p>
-      <p class="text-sm text-gray-600" id="userEmailDisplay">Please sign in</p>
+    <nav class="space-x-3">
+      <button id="filterNairobi" class="px-3 py-1 rounded-md bg-green-600 text-white hover:bg-green-700">Nairobi</button>
+      <button id="filterKisumu" class="px-3 py-1 rounded-md bg-green-600 text-white hover:bg-green-700">Kisumu</button>
+      <button id="filterAll" class="px-3 py-1 rounded-md bg-gray-300 text-gray-700 hover:bg-gray-400">All</button>
+    </nav>
+    <div id="userInfo" class="text-sm text-gray-700">
+      <!-- User name and email will show here -->
     </div>
   </header>
 
-  <!-- Filter Buttons -->
-  <nav class="bg-white shadow p-4 flex justify-center gap-4 mt-4">
-    <button id="btnAll" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">All Locations</button>
-    <button id="btnNairobi" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Nairobi</button>
-    <button id="btnKisumu" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Kisumu</button>
-  </nav>
-
   <!-- Listings Container -->
-  <main class="flex-grow max-w-6xl mx-auto p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="listingsContainer">
-    <!-- Listings will be inserted here dynamically -->
+  <main class="flex-grow max-w-6xl mx-auto p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Listings will be injected here -->
   </main>
 
   <script>
-    // Show user info from localStorage
-    const userNameDisplay = document.getElementById("userNameDisplay");
-    const userEmailDisplay = document.getElementById("userEmailDisplay");
-
-    const userName = localStorage.getItem("userName");
-    const userEmail = localStorage.getItem("userEmail");
-
-    if (userName && userEmail) {
-      userNameDisplay.textContent = userName;
-      userEmailDisplay.textContent = userEmail;
-    } else {
-      userNameDisplay.textContent = "Guest";
-      userEmailDisplay.textContent = "Please sign in";
+    // --- Utility: get user info from localStorage (simulate sign up) ---
+    function getCurrentUser() {
+      // Expect localStorage keys: 'signedUpName' and 'signedUpEmail' or null
+      return {
+        name: localStorage.getItem("signedUpName") || null,
+        email: localStorage.getItem("signedUpEmail") || null
+      };
     }
 
-    // Load all listings from localStorage
+    // --- Render user info top-right ---
+    function renderUserInfo() {
+      const userDiv = document.getElementById("userInfo");
+      const user = getCurrentUser();
+      if (user.name && user.email) {
+        userDiv.textContent = `Signed in as: ${user.name} (${user.email})`;
+      } else {
+        userDiv.innerHTML = `<a href="signup.html" class="text-green-600 hover:underline">Sign Up</a>`;
+      }
+    }
+
+    // --- Load listings from localStorage ---
     function loadListings() {
-      const listingsJSON = localStorage.getItem("novaStaysListings");
-      if (!listingsJSON) return [];
+      const listingsRaw = localStorage.getItem("novaStaysListings");
+      if (!listingsRaw) return [];
       try {
-        return JSON.parse(listingsJSON);
+        return JSON.parse(listingsRaw);
       } catch {
         return [];
       }
     }
 
-    // Save listings back to localStorage
-    function saveListings(listings) {
-      localStorage.setItem("novaStaysListings", JSON.stringify(listings));
+    // --- Filter listings by location ---
+    let currentFilter = null; // null means show all
+    function filterListings(listings, location) {
+      if (!location) return listings;
+      return listings.filter(l => l.location.toLowerCase() === location.toLowerCase());
     }
 
-    // Render listings filtered by location
-    function renderListings(filterLocation = "All") {
-      const container = document.getElementById("listingsContainer");
-      container.innerHTML = ""; // clear current
+    // --- Create a carousel for listing images ---
+    function createCarousel(images) {
+      const container = document.createElement("div");
+      container.className = "carousel-container";
 
-      let listings = loadListings();
+      const imagesWrapper = document.createElement("div");
+      imagesWrapper.className = "carousel-images";
 
-      if (filterLocation !== "All") {
-        listings = listings.filter(listing => listing.location.toLowerCase() === filterLocation.toLowerCase());
+      images.forEach(src => {
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = "Listing image";
+        imagesWrapper.appendChild(img);
+      });
+
+      container.appendChild(imagesWrapper);
+
+      // Carousel controls only if multiple images
+      if (images.length > 1) {
+        let currentIndex = 0;
+
+        const btnLeft = document.createElement("button");
+        btnLeft.textContent = "‹";
+        btnLeft.className = "carousel-btn left";
+        btnLeft.onclick = () => {
+          currentIndex = (currentIndex - 1 + images.length) % images.length;
+          imagesWrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+        };
+
+        const btnRight = document.createElement("button");
+        btnRight.textContent = "›";
+        btnRight.className = "carousel-btn right";
+        btnRight.onclick = () => {
+          currentIndex = (currentIndex + 1) % images.length;
+          imagesWrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+        };
+
+        container.appendChild(btnLeft);
+        container.appendChild(btnRight);
       }
 
+      return container;
+    }
+
+    // --- Create a listing card ---
+    function createListingCard(listing) {
+      const card = document.createElement("article");
+      card.className = "bg-white rounded-lg shadow-md p-4 flex flex-col";
+
+      // Image carousel
+      const carousel = createCarousel(listing.images);
+      card.appendChild(carousel);
+
+      // Title and location
+      const title = document.createElement("h2");
+      title.textContent = listing.title;
+      title.className = "mt-3 font-semibold text-lg text-green-700";
+      card.appendChild(title);
+
+      const location = document.createElement("p");
+      location.textContent = listing.location;
+      location.className = "text-gray-500 text-sm";
+      card.appendChild(location);
+
+      // Price per night
+      const price = document.createElement("p");
+      price.textContent = `$${listing.price.toFixed(2)} / night`;
+      price.className = "font-bold mt-1";
+      card.appendChild(price);
+
+      // Features
+      if (listing.features && listing.features.length > 0) {
+        const features = document.createElement("p");
+        features.textContent = "Features: " + listing.features.join(", ");
+        features.className = "text-xs mt-2 text-gray-600";
+        card.appendChild(features);
+      }
+
+      // Host info (avatar + name)
+      const hostDiv = document.createElement("div");
+      hostDiv.className = "flex items-center mt-3 gap-2";
+
+      const avatarImg = document.createElement("img");
+      avatarImg.src = listing.hostAvatar;
+      avatarImg.alt = "Host avatar";
+      avatarImg.className = "w-10 h-10 rounded-full object-cover border border-green-600";
+
+      const hostName = document.createElement("span");
+      hostName.textContent = listing.hostName;
+      hostName.className = "text-sm font-medium text-green-700";
+
+      hostDiv.appendChild(avatarImg);
+      hostDiv.appendChild(hostName);
+
+      card.appendChild(hostDiv);
+
+      // Rating with clickable reviews (fake sample reviews)
+      const ratingDiv = document.createElement("div");
+      ratingDiv.className = "mt-2 text-yellow-500 cursor-pointer select-none";
+      ratingDiv.textContent = listing.rating || "⭐⭐⭐⭐☆";
+
+      ratingDiv.title = "Click to see reviews";
+      ratingDiv.onclick = () => {
+        alert(`Reviews for ${listing.title}:\n\n- Great place!\n- Very clean and cozy.\n- Would stay again!`);
+      };
+
+      card.appendChild(ratingDiv);
+
+      // Book Now button
+      const bookBtn = document.createElement("button");
+      bookBtn.textContent = "Book Now";
+      bookBtn.className = "mt-4 bg-green-600 hover:bg-green-700 text-white py-2 rounded-md";
+      bookBtn.onclick = () => {
+        const user = getCurrentUser();
+        if (!user.name || !user.email) {
+          alert("Please sign up or sign in to book a property.");
+          window.location.href = "signup.html";
+          return;
+        }
+        // Pass details via query params to book.html
+        const params = new URLSearchParams({
+          listingId: listing.id,
+          listingTitle: listing.title,
+          listingLocation: listing.location,
+          listingPrice: listing.price,
+          bookerName: user.name,
+          bookerEmail: user.email,
+        });
+        window.location.href = "book.html?" + params.toString();
+      };
+
+      card.appendChild(bookBtn);
+
+      return card;
+    }
+
+    // --- Render listings with optional filter ---
+    function renderListings(filterLocation = null) {
+      const main = document.querySelector("main");
+      main.innerHTML = "";
+
+      const allListings = loadListings();
+      const listings = filterListings(allListings, filterLocation);
+
       if (listings.length === 0) {
-        container.innerHTML = `<p class="col-span-full text-center text-gray-500">No listings found.</p>`;
+        const noResult = document.createElement("p");
+        noResult.textContent = "No properties found.";
+        noResult.className = "text-center text-gray-500 col-span-full";
+        main.appendChild(noResult);
         return;
       }
 
       listings.forEach(listing => {
-        // Create card element
-        const card = document.createElement("article");
-        card.className = "bg-white rounded-lg shadow p-4 flex flex-col";
-
-        // Image carousel container
-        const imgContainer = document.createElement("div");
-        imgContainer.className = "mb-3 flex overflow-x-auto gap-2";
-
-        listing.images.forEach(imgSrc => {
-          const img = document.createElement("img");
-          img.src = imgSrc;
-          img.alt = listing.title + " image";
-          img.className = "w-32 h-24 object-cover rounded flex-shrink-0";
-          imgContainer.appendChild(img);
-        });
-        card.appendChild(imgContainer);
-
-        // Title and Location
-        const title = document.createElement("h3");
-        title.textContent = listing.title;
-        title.className = "text-lg font-semibold text-green-700";
-        card.appendChild(title);
-
-        const location = document.createElement("p");
-        location.textContent = listing.location;
-        location.className = "text-sm text-gray-500";
-        card.appendChild(location);
-
-        // Price
-        const price = document.createElement("p");
-        price.textContent = `$${listing.price} per night`;
-        price.className = "font-semibold text-gray-700 mt-1";
-        card.appendChild(price);
-
-        // Host info
-        const hostDiv = document.createElement("div");
-        hostDiv.className = "flex items-center gap-3 mt-3";
-
-        const hostImg = document.createElement("img");
-        hostImg.src = listing.hostAvatar;
-        hostImg.alt = "Host avatar";
-        hostImg.className = "w-10 h-10 rounded-full object-cover";
-
-        const hostName = document.createElement("p");
-        hostName.textContent = listing.hostName;
-        hostName.className = "text-sm text-gray-600";
-
-        hostDiv.appendChild(hostImg);
-        hostDiv.appendChild(hostName);
-        card.appendChild(hostDiv);
-
-        // Features
-        if (listing.features && listing.features.length) {
-          const featuresDiv = document.createElement("div");
-          featuresDiv.className = "flex flex-wrap gap-2 mt-3 text-xs text-green-700";
-
-          listing.features.forEach(feature => {
-            const featSpan = document.createElement("span");
-            featSpan.textContent = feature;
-            featSpan.className = "bg-green-100 px-2 py-1 rounded";
-            featuresDiv.appendChild(featSpan);
-          });
-          card.appendChild(featuresDiv);
-        }
-
-        // Rating (clickable reviews)
-        if (listing.rating) {
-          const ratingBtn = document.createElement("button");
-          ratingBtn.textContent = listing.rating;
-          ratingBtn.className = "mt-3 text-green-800 underline text-sm self-start";
-          ratingBtn.style.cursor = "pointer";
-          ratingBtn.addEventListener("click", () => {
-            alert(`Reviews for "${listing.title}":\n\n${listing.rating}`);
-          });
-          card.appendChild(ratingBtn);
-        }
-
-        // Book Now Button
-        const bookBtn = document.createElement("button");
-        bookBtn.textContent = "Book Now";
-        bookBtn.className = "mt-auto bg-green-600 hover:bg-green-700 text-white py-2 rounded mt-4";
-        bookBtn.addEventListener("click", () => {
-          const userName = localStorage.getItem("userName") || "Guest";
-          const userEmail = localStorage.getItem("userEmail") || "Not Provided";
-
-          const bookingDetails = {
-            listingId: listing.id,
-            title: listing.title,
-            location: listing.location,
-            price: listing.price,
-            userName,
-            userEmail
-          };
-          localStorage.setItem("currentBooking", JSON.stringify(bookingDetails));
-          window.location.href = "book.html";
-        });
-        card.appendChild(bookBtn);
-
-        container.appendChild(card);
+        main.appendChild(createListingCard(listing));
       });
     }
 
-    // Initial render all listings
-    renderListings();
+    // --- Setup filter buttons ---
+    document.getElementById("filterNairobi").addEventListener("click", () => {
+      currentFilter = "Nairobi";
+      renderListings(currentFilter);
+      highlightFilterBtn(currentFilter);
+    });
+    document.getElementById("filterKisumu").addEventListener("click", () => {
+      currentFilter = "Kisumu";
+      renderListings(currentFilter);
+      highlightFilterBtn(currentFilter);
+    });
+    document.getElementById("filterAll").addEventListener("click", () => {
+      currentFilter = null;
+      renderListings(null);
+      highlightFilterBtn(null);
+    });
 
-    // Filter button handlers
-    document.getElementById("btnAll").addEventListener("click", () => renderListings("All"));
-    document.getElementById("btnNairobi").addEventListener("click", () => renderListings("Nairobi"));
-    document.getElementById("btnKisumu").addEventListener("click", () => renderListings("Kisumu"));
+    // Highlight active filter button
+    function highlightFilterBtn(filter) {
+      ["filterNairobi", "filterKisumu", "filterAll"].forEach(id => {
+        const btn = document.getElementById(id);
+        if (
+          (filter === "Nairobi" && id === "filterNairobi") ||
+          (filter === "Kisumu" && id === "filterKisumu") ||
+          (filter === null && id === "filterAll")
+        ) {
+          btn.classList.add("bg-green-700", "text-white");
+          btn.classList.remove("bg-gray-300", "text-gray-700");
+        } else {
+          btn.classList.remove("bg-green-700", "text-white");
+          btn.classList.add("bg-gray-300", "text-gray-700");
+        }
+      });
+    }
+
+    // Initial render
+    renderUserInfo();
+    renderListings();
+    highlightFilterBtn(null);
+
   </script>
 </body>
 </html>
