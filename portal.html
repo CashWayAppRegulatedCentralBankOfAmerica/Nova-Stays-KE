@@ -2,79 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Host Portal - Nova Stays KE</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-50">
 
   <!-- Header -->
-  <header class="bg-white shadow p-4 flex justify-between items-center">
-    <h1 class="text-2xl font-bold text-green-600">Nova Stays KE</h1>
-    <div class="text-right text-sm text-gray-700 leading-tight">
-      <p class="font-semibold">John Doe</p>
-      <p>johndoe@example.com</p>
-      <p>+254 712 345678</p>
+  <header class="flex justify-between items-center p-4 bg-white shadow-md">
+    <div class="text-xl font-bold text-green-600">Nova Stays KE</div>
+    <div id="hostInfo" class="text-sm text-right text-gray-700">
+      <div id="hostName">Host Name</div>
+      <div id="hostEmail">host@example.com</div>
+      <div id="hostPhone">+254700000000</div>
     </div>
   </header>
 
-  <!-- Portal Content -->
-  <main class="max-w-5xl mx-auto mt-8 px-4">
-    <h2 class="text-xl font-bold text-gray-800 mb-4">Your Listings</h2>
-
-    <div id="listingsContainer" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <!-- Listings will be injected here -->
-    </div>
+  <!-- Listings Container -->
+  <main class="max-w-4xl mx-auto p-6">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Your Listings</h2>
+    <div id="listingsContainer" class="grid gap-6"></div>
   </main>
 
   <!-- Modal -->
-  <div id="errorModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded shadow text-center">
-      <p class="text-red-600 font-semibold mb-4">Incorrect verification code. Listing not verified.</p>
-      <button onclick="closeModal()" class="px-4 py-2 bg-green-600 text-white rounded">Close</button>
+  <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded shadow-md w-80">
+      <h3 class="text-lg font-semibold mb-2 text-red-600">Verification Failed</h3>
+      <p class="text-sm text-gray-600">The code entered is incorrect. Listing is not verified.</p>
+      <button onclick="closeModal()" class="mt-4 bg-red-600 text-white px-4 py-2 rounded">Close</button>
     </div>
   </div>
 
   <script>
-    // Sample placeholder listing data
-    const listings = [
-      {
-        id: 1,
-        title: "Cozy Apartment in Kilimani",
-        price: 65,
-        image: "https://via.placeholder.com/300",
-        status: "pending" // or "live"
-      },
-      {
-        id: 2,
-        title: "Luxury Villa in Karen",
-        price: 150,
-        image: "https://via.placeholder.com/300",
-        status: "pending"
-      }
-    ];
+    // Placeholder host data (would come from login in full version)
+    const hostDetails = {
+      name: "Jane Doe",
+      email: "jane.doe@example.com",
+      phone: "+254712345678"
+    };
+
+    // Inject host details
+    document.getElementById("hostName").textContent = hostDetails.name;
+    document.getElementById("hostEmail").textContent = hostDetails.email;
+    document.getElementById("hostPhone").textContent = hostDetails.phone;
+
+    // Load from localStorage
+    function loadListings() {
+      return JSON.parse(localStorage.getItem("novaStaysListings") || "[]");
+    }
+
+    // Save to localStorage
+    function saveListings(data) {
+      localStorage.setItem("novaStaysListings", JSON.stringify(data));
+    }
 
     function renderListings() {
       const container = document.getElementById("listingsContainer");
       container.innerHTML = "";
+      const listings = loadListings();
 
       listings.forEach(listing => {
         const card = document.createElement("div");
-        card.className = "bg-white rounded shadow p-4 flex flex-col gap-2";
-
-        const statusLabel = listing.status === "live"
-          ? '<span class="text-green-600 font-semibold text-sm flex items-center">Live <span class="ml-2 w-2 h-2 bg-green-600 rounded-full inline-block"></span></span>'
-          : '<span class="text-yellow-600 font-medium text-sm">Pending Verification</span>';
+        card.className = "bg-white rounded-lg shadow-md p-4 flex flex-col md:flex-row gap-4";
 
         card.innerHTML = `
-          <img src="${listing.image}" class="w-full h-40 object-cover rounded" />
-          <h3 class="text-lg font-bold">${listing.title}</h3>
-          <p class="text-gray-700">Price: $${listing.price}/night</p>
-          ${statusLabel}
-          <div class="flex gap-2 mt-2">
-            <button onclick="editListing(${listing.id})" class="px-3 py-1 bg-blue-500 text-white text-sm rounded">Edit</button>
-            <button onclick="deleteListing(${listing.id})" class="px-3 py-1 bg-red-500 text-white text-sm rounded">Delete</button>
-            <button onclick="verifyListing(${listing.id})" class="px-3 py-1 bg-yellow-500 text-white text-sm rounded">Verify</button>
+          <img src="${listing.images[0]}" alt="Image" class="w-32 h-32 object-cover rounded">
+          <div class="flex-1">
+            <h3 class="text-lg font-bold">${listing.title}</h3>
+            <p class="text-sm text-gray-600">${listing.location}</p>
+            <p class="text-green-700 font-semibold mt-1">$${listing.price} / night</p>
+            <div class="flex items-center mt-2">
+              <span id="status-${listing.id}" class="text-xs px-2 py-1 rounded-full ${listing.verified ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">
+                ${listing.verified ? '<span class="inline-block w-2 h-2 bg-green-600 rounded-full mr-1"></span> Live' : 'Pending Verification'}
+              </span>
+            </div>
+            <div class="mt-4 space-x-2">
+              <button onclick="editListing(${listing.id})" class="text-sm text-blue-600">Edit</button>
+              <button onclick="deleteListing(${listing.id})" class="text-sm text-red-600">Delete</button>
+              ${!listing.verified ? `
+                <input id="code-${listing.id}" class="border px-2 py-1 text-sm w-24" placeholder="Code">
+                <button onclick="verifyListing(${listing.id})" class="text-sm bg-green-600 text-white px-2 py-1 rounded">Verify</button>
+              ` : ''}
+            </div>
           </div>
         `;
 
@@ -82,37 +91,37 @@
       });
     }
 
-    function editListing(id) {
-      alert("Edit functionality coming soon.");
-    }
-
     function deleteListing(id) {
-      const index = listings.findIndex(l => l.id === id);
-      if (index !== -1) {
-        if (confirm("Are you sure you want to delete this listing?")) {
-          listings.splice(index, 1);
-          renderListings();
-        }
-      }
+      const listings = loadListings();
+      const updated = listings.filter(l => l.id !== id);
+      saveListings(updated);
+      renderListings();
     }
 
     function verifyListing(id) {
-      const code = prompt("Enter verification code:");
+      const code = document.getElementById(`code-${id}`).value.trim();
       if (code === "1234") {
+        const listings = loadListings();
         const listing = listings.find(l => l.id === id);
         if (listing) {
-          listing.status = "live";
+          listing.verified = true;
+          saveListings(listings);
           renderListings();
         }
       } else {
-        document.getElementById("errorModal").classList.remove("hidden");
+        document.getElementById("modal").classList.remove("hidden");
       }
     }
 
     function closeModal() {
-      document.getElementById("errorModal").classList.add("hidden");
+      document.getElementById("modal").classList.add("hidden");
     }
 
+    function editListing(id) {
+      alert("Edit function not yet implemented.");
+    }
+
+    // Initial render
     renderListings();
   </script>
 </body>
