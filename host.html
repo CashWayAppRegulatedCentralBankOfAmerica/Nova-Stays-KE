@@ -2,16 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Host Your Property - Nova Stays KE</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .modal-bg {
-      background-color: rgba(0, 0, 0, 0.6);
-    }
-  </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-100 text-gray-800">
+
   <header class="bg-white shadow p-4 flex justify-between items-start">
     <h1 class="text-xl font-bold text-green-600">Nova Stays KE</h1>
     <div class="text-sm text-gray-600 text-right leading-snug">
@@ -20,99 +16,121 @@
     </div>
   </header>
 
-  <main class="max-w-xl mx-auto mt-8 p-4 bg-white shadow-md rounded-lg">
+  <main class="max-w-2xl mx-auto mt-6 p-4 bg-white shadow-md rounded-lg">
     <h2 class="text-lg font-bold mb-4 text-green-700">List Your Property</h2>
     <form id="hostForm" class="space-y-4">
       <input type="text" name="hostName" placeholder="Your Full Name" class="w-full border px-3 py-2 rounded-md" required />
-      <div class="flex space-x-2">
-        <select id="countryCode" name="countryCode" class="border px-3 py-2 rounded-md" required>
+
+      <div class="flex gap-2">
+        <select name="countryCode" class="w-1/3 border px-3 py-2 rounded-md">
           <option value="+254">+254 (Kenya)</option>
           <option value="+1">+1 (USA)</option>
           <option value="+44">+44 (UK)</option>
-          <!-- Add more as needed -->
         </select>
-        <input type="tel" name="hostPhone" placeholder="Your Phone Number" class="flex-1 border px-3 py-2 rounded-md" required />
+        <input type="tel" name="hostPhone" placeholder="Phone Number" class="w-2/3 border px-3 py-2 rounded-md" required />
       </div>
+
       <input type="email" name="hostEmail" placeholder="Your Email" class="w-full border px-3 py-2 rounded-md" required />
 
-      <input type="text" name="title" placeholder="Listing Name" class="w-full border px-3 py-2 rounded-md" required />
-      <input type="number" name="price" placeholder="Price per night (USD)" class="w-full border px-3 py-2 rounded-md" required />
+      <input type="text" name="listingName" placeholder="Listing Name" class="w-full border px-3 py-2 rounded-md" required />
+      <input type="number" name="price" placeholder="Amount per night (USD)" class="w-full border px-3 py-2 rounded-md" required />
 
-      <select name="country" class="w-full border px-3 py-2 rounded-md" required>
+      <select name="country" class="w-full border px-3 py-2 rounded-md">
         <option value="Kenya">Kenya</option>
         <option value="USA">USA</option>
         <option value="UK">UK</option>
-        <!-- Add more countries -->
       </select>
-      <input type="text" name="county" placeholder="County" class="w-full border px-3 py-2 rounded-md" required />
-      <input type="text" name="addressOne" placeholder="Address Line 1" class="w-full border px-3 py-2 rounded-md" required />
-      <input type="text" name="addressTwo" placeholder="Address Line 2" class="w-full border px-3 py-2 rounded-md" />
-      <input type="text" name="postalAddress" placeholder="Postal Address" class="w-full border px-3 py-2 rounded-md" required />
 
-      <label class="block text-sm font-semibold mt-4">Upload Listing Images</label>
-      <input type="file" id="listingImages" accept="image/*" multiple class="w-full border px-3 py-2 rounded-md" required />
+      <input type="text" name="county" placeholder="County" class="w-full border px-3 py-2 rounded-md" required />
+      <input type="text" name="address1" placeholder="Address Line 1" class="w-full border px-3 py-2 rounded-md" required />
+      <input type="text" name="address2" placeholder="Address Line 2" class="w-full border px-3 py-2 rounded-md" />
+      <input type="text" name="postalAddress" placeholder="Postal Address" class="w-full border px-3 py-2 rounded-md" />
+
+      <label class="block text-sm font-semibold">Are you the owner?</label>
+      <select name="ownership" class="w-full border px-3 py-2 rounded-md">
+        <option value="Owner">Owner</option>
+        <option value="Company Representative">Company Representative</option>
+      </select>
+
+      <label class="block text-sm font-semibold">Property Type</label>
+      <select name="propertyType" class="w-full border px-3 py-2 rounded-md">
+        <option value="Apartment">Apartment</option>
+        <option value="Home">Home</option>
+        <option value="Villa">Villa</option>
+      </select>
+
+      <label class="block text-sm font-semibold">Property Size</label>
+      <select name="propertySize" class="w-full border px-3 py-2 rounded-md">
+        <option value="Studio">Studio</option>
+        <option value="1 Bedroom">1 Bedroom</option>
+        <option value="2 Bedroom">2 Bedroom</option>
+        <option value="3 Bedroom">3 Bedroom</option>
+      </select>
+
+      <label class="block text-sm font-semibold">Upload Front & Back of ID / Passport / License</label>
+      <input type="file" accept="image/*" multiple class="w-full border px-3 py-2 rounded-md" required />
+
+      <label class="block text-sm font-semibold">Upload Host Avatar</label>
+      <input type="file" id="avatarInput" accept="image/*" class="w-full border px-3 py-2 rounded-md" required />
+      <div id="avatarPreview" class="mt-2"></div>
+
+      <label class="block text-sm font-semibold">Upload Listing Images</label>
+      <input type="file" id="listingImages" accept="image/*" multiple class="w-full border px-3 py-2 rounded-md" />
       <div id="imagePreview" class="grid grid-cols-3 gap-2 mt-2"></div>
 
-      <label class="block text-sm font-semibold mt-4">Upload Host Avatar</label>
-      <input type="file" id="hostAvatar" accept="image/*" class="w-full border px-3 py-2 rounded-md" required />
-      <img id="avatarPreview" class="mt-2 h-24 rounded-full object-cover" />
-
-      <div class="mt-4">
-        <p class="font-medium text-sm mb-1">Features:</p>
-        <div class="flex flex-wrap gap-2 text-sm">
-          <label><input type="checkbox" value="WiFi" /> WiFi</label>
-          <label><input type="checkbox" value="Parking" /> Parking</label>
-          <label><input type="checkbox" value="TV" /> TV</label>
-          <label><input type="checkbox" value="Hot Shower" /> Hot Shower</label>
-          <label><input type="checkbox" value="Pool" /> Pool</label>
-          <label><input type="checkbox" value="Balcony" /> Balcony</label>
-          <label><input type="checkbox" value="Kitchen" /> Kitchen</label>
-          <label><input type="checkbox" value="Air Conditioning" /> Air Conditioning</label>
-        </div>
-      </div>
-
-      <button type="submit" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white text-sm py-2 rounded-md">List Property</button>
+      <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2 rounded-md">List Property</button>
     </form>
   </main>
 
-  <!-- Modal -->
-  <div id="successModal" class="fixed inset-0 hidden modal-bg flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 max-w-md text-center">
-      <h3 class="text-lg font-bold text-green-700 mb-2">Listing Submitted</h3>
-      <p class="text-sm mb-4">
-        Your listing has been made successfully. Your listing will go live and redirected to your Host Panel after a background check which is undergoing through your listing for legitimacy as a host under our terms act and is under review. You will get an email once your listing has been verified and live in our platform. In case any other detail is needed, you will receive an email.
+  <!-- Success Modal -->
+  <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl max-w-md mx-auto p-6 text-center">
+      <h3 class="text-lg font-semibold mb-2 text-green-700">Listing Submitted Successfully</h3>
+      <p class="text-sm text-gray-700 mb-4">
+        Your listing will go live and redirected to your Host Panel after a background check which is undergoing through your listing for legitimacy as a host under our terms act and it's under review. You will get an email once your listing has been verified and live in our platform. In case any other detail is needed, you will receive an email.
       </p>
-      <button onclick="window.location.href='listing.html'" class="mt-2 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded">Go to Listing</button>
+      <button onclick="window.location.href='listing.html'" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Continue</button>
     </div>
   </div>
 
   <script>
-    document.getElementById("hostAvatar").addEventListener("change", function () {
-      const reader = new FileReader();
-      reader.onload = () => {
-        document.getElementById("avatarPreview").src = reader.result;
-      };
-      if (this.files[0]) reader.readAsDataURL(this.files[0]);
-    });
+    const imageInput = document.getElementById("listingImages");
+    const imagePreview = document.getElementById("imagePreview");
+    const avatarInput = document.getElementById("avatarInput");
+    const avatarPreview = document.getElementById("avatarPreview");
+    const form = document.getElementById("hostForm");
+    const successModal = document.getElementById("successModal");
 
-    document.getElementById("listingImages").addEventListener("change", function () {
-      const preview = document.getElementById("imagePreview");
-      preview.innerHTML = "";
-      Array.from(this.files).forEach(file => {
+    imageInput.addEventListener("change", () => {
+      imagePreview.innerHTML = "";
+      [...imageInput.files].forEach(file => {
         const reader = new FileReader();
         reader.onload = e => {
           const img = document.createElement("img");
           img.src = e.target.result;
-          img.className = "h-24 w-full object-cover rounded";
-          preview.appendChild(img);
+          img.className = "w-full h-24 object-cover rounded";
+          imagePreview.appendChild(img);
         };
         reader.readAsDataURL(file);
       });
     });
 
-    document.getElementById("hostForm").addEventListener("submit", function (e) {
+    avatarInput.addEventListener("change", () => {
+      avatarPreview.innerHTML = "";
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.className = "w-24 h-24 object-cover rounded-full mx-auto";
+        avatarPreview.appendChild(img);
+      };
+      reader.readAsDataURL(avatarInput.files[0]);
+    });
+
+    form.addEventListener("submit", e => {
       e.preventDefault();
-      document.getElementById("successModal").classList.remove("hidden");
+      successModal.classList.remove("hidden");
+      successModal.classList.add("flex");
     });
   </script>
 </body>
