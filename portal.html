@@ -1,127 +1,236 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Host Portal - Nova Stays KE</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Modal styles */
+    #modalBackdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 50;
+      justify-content: center;
+      align-items: center;
+    }
+    #modal {
+      background: white;
+      padding: 1.5rem;
+      max-width: 400px;
+      border-radius: 0.5rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    #modal button {
+      margin-top: 1rem;
+      background-color: #22c55e; /* green-500 */
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+    }
+    .status-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 9999px;
+      margin-left: 6px;
+    }
+    .status-live {
+      background-color: #22c55e; /* green */
+    }
+    .status-pending {
+      background-color: #f59e0b; /* amber */
+    }
+  </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
 
   <!-- Header -->
-  <header class="flex justify-between items-center p-4 bg-white shadow-md">
-    <div class="text-xl font-bold text-green-600">Nova Stays KE</div>
-    <div id="hostInfo" class="text-sm text-right text-gray-700">
-      <div id="hostName">Host Name</div>
-      <div id="hostEmail">host@example.com</div>
-      <div id="hostPhone">+254700000000</div>
+  <header class="bg-white shadow flex justify-between items-center px-6 py-4">
+    <h1 class="text-2xl font-bold text-green-600">Nova Stays KE</h1>
+    <div id="hostInfo" class="text-right text-sm text-gray-700 space-y-1">
+      <!-- Host info will load here -->
     </div>
   </header>
 
-  <!-- Listings Container -->
-  <main class="max-w-4xl mx-auto p-6">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Your Listings</h2>
-    <div id="listingsContainer" class="grid gap-6"></div>
+  <!-- Main content -->
+  <main class="flex-grow max-w-6xl mx-auto p-6 space-y-8">
+
+    <!-- Listings Section -->
+    <section>
+      <h2 class="text-xl font-semibold mb-4 text-green-700">Your Listings</h2>
+      <div id="listingsContainer" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Listing cards injected here -->
+      </div>
+    </section>
+
+    <!-- Payments & Account Section -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="text-lg font-semibold mb-2">Monthly Payment Summary</h3>
+        <p>Amount Due: <strong>$0.00</strong></p>
+        <p>Last Payment Date: <em>Not available</em></p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="text-lg font-semibold mb-2">Payment Methods</h3>
+        <p>No payment methods linked.</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="text-lg font-semibold mb-2">Payouts</h3>
+        <p>No payouts recorded.</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="text-lg font-semibold mb-2">Pending Payments</h3>
+        <p>No pending payments.</p>
+      </div>
+    </section>
   </main>
 
   <!-- Modal -->
-  <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-6 rounded shadow-md w-80">
-      <h3 class="text-lg font-semibold mb-2 text-red-600">Verification Failed</h3>
-      <p class="text-sm text-gray-600">The code entered is incorrect. Listing is not verified.</p>
-      <button onclick="closeModal()" class="mt-4 bg-red-600 text-white px-4 py-2 rounded">Close</button>
+  <div id="modalBackdrop" class="flex">
+    <div id="modal">
+      <p id="modalMessage"></p>
+      <button id="closeModalBtn">OK</button>
     </div>
   </div>
 
   <script>
-    // Placeholder host data (would come from login in full version)
-    const hostDetails = {
-      name: "Jane Doe",
-      email: "jane.doe@example.com",
-      phone: "+254712345678"
+    // Modal helpers
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalMessage = document.getElementById('modalMessage');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    function showModal(message) {
+      modalMessage.textContent = message;
+      modalBackdrop.style.display = 'flex';
+    }
+    closeModalBtn.onclick = () => {
+      modalBackdrop.style.display = 'none';
+    };
+    window.onclick = (e) => {
+      if (e.target === modalBackdrop) modalBackdrop.style.display = 'none';
     };
 
-    // Inject host details
-    document.getElementById("hostName").textContent = hostDetails.name;
-    document.getElementById("hostEmail").textContent = hostDetails.email;
-    document.getElementById("hostPhone").textContent = hostDetails.phone;
+    // Load host and listings from localStorage
+    const listingsKey = 'novaStaysListings';
 
-    // Load from localStorage
     function loadListings() {
-      return JSON.parse(localStorage.getItem("novaStaysListings") || "[]");
-    }
-
-    // Save to localStorage
-    function saveListings(data) {
-      localStorage.setItem("novaStaysListings", JSON.stringify(data));
-    }
-
-    function renderListings() {
-      const container = document.getElementById("listingsContainer");
-      container.innerHTML = "";
-      const listings = loadListings();
-
-      listings.forEach(listing => {
-        const card = document.createElement("div");
-        card.className = "bg-white rounded-lg shadow-md p-4 flex flex-col md:flex-row gap-4";
-
-        card.innerHTML = `
-          <img src="${listing.images[0]}" alt="Image" class="w-32 h-32 object-cover rounded">
-          <div class="flex-1">
-            <h3 class="text-lg font-bold">${listing.title}</h3>
-            <p class="text-sm text-gray-600">${listing.location}</p>
-            <p class="text-green-700 font-semibold mt-1">$${listing.price} / night</p>
-            <div class="flex items-center mt-2">
-              <span id="status-${listing.id}" class="text-xs px-2 py-1 rounded-full ${listing.verified ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">
-                ${listing.verified ? '<span class="inline-block w-2 h-2 bg-green-600 rounded-full mr-1"></span> Live' : 'Pending Verification'}
-              </span>
-            </div>
-            <div class="mt-4 space-x-2">
-              <button onclick="editListing(${listing.id})" class="text-sm text-blue-600">Edit</button>
-              <button onclick="deleteListing(${listing.id})" class="text-sm text-red-600">Delete</button>
-              ${!listing.verified ? `
-                <input id="code-${listing.id}" class="border px-2 py-1 text-sm w-24" placeholder="Code">
-                <button onclick="verifyListing(${listing.id})" class="text-sm bg-green-600 text-white px-2 py-1 rounded">Verify</button>
-              ` : ''}
-            </div>
-          </div>
-        `;
-
-        container.appendChild(card);
-      });
-    }
-
-    function deleteListing(id) {
-      const listings = loadListings();
-      const updated = listings.filter(l => l.id !== id);
-      saveListings(updated);
-      renderListings();
-    }
-
-    function verifyListing(id) {
-      const code = document.getElementById(`code-${id}`).value.trim();
-      if (code === "1234") {
-        const listings = loadListings();
-        const listing = listings.find(l => l.id === id);
-        if (listing) {
-          listing.verified = true;
-          saveListings(listings);
-          renderListings();
-        }
-      } else {
-        document.getElementById("modal").classList.remove("hidden");
+      const stored = localStorage.getItem(listingsKey);
+      if (!stored) return [];
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return [];
       }
     }
 
-    function closeModal() {
-      document.getElementById("modal").classList.add("hidden");
+    function saveListings(listings) {
+      localStorage.setItem(listingsKey, JSON.stringify(listings));
     }
 
-    function editListing(id) {
-      alert("Edit function not yet implemented.");
+    // Load listings & host info
+    const listings = loadListings();
+
+    // Assume all listings have same host info, get from first listing if exists
+    const hostInfoDiv = document.getElementById('hostInfo');
+    let hostName = '', hostEmail = '', hostPhone = '';
+
+    if (listings.length > 0) {
+      hostName = listings[0].hostName || '';
+      hostEmail = listings[0].hostEmail || 'email@example.com'; // fallback placeholder
+      hostPhone = listings[0].hostPhone || 'N/A'; // fallback
+    } else {
+      hostName = 'No Host Found';
+      hostEmail = '';
+      hostPhone = '';
     }
 
-    // Initial render
+    hostInfoDiv.innerHTML = `
+      <div><strong>${hostName}</strong></div>
+      <div>${hostEmail}</div>
+      <div>${hostPhone}</div>
+    `;
+
+    // Listing cards container
+    const listingsContainer = document.getElementById('listingsContainer');
+
+    function renderListings() {
+      listingsContainer.innerHTML = '';
+      if (listings.length === 0) {
+        listingsContainer.innerHTML = '<p class="text-gray-500">You have no listings yet.</p>';
+        return;
+      }
+
+      listings.forEach(listing => {
+        const isLive = listing.verified === true;
+        const isPending = !listing.verified;
+
+        // Use first image as main image or placeholder
+        const mainImage = (listing.images && listing.images.length > 0) ? listing.images[0] : 'https://via.placeholder.com/400x250?text=No+Image';
+
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-lg shadow p-4 flex flex-col';
+
+        card.innerHTML = `
+          <img src="${mainImage}" alt="${listing.title}" class="rounded-md w-full h-48 object-cover mb-3" />
+          <h3 class="font-semibold text-lg">${listing.title}</h3>
+          <p class="text-gray-600">${listing.location}</p>
+          <p class="mt-1 font-medium">$${listing.price.toFixed(2)} / night</p>
+          <p class="mt-1">
+            Status: 
+            <span class="inline-flex items-center text-sm font-semibold">
+              ${isLive ? 'Live' : 'Pending Verification'}
+              <span class="status-dot ${isLive ? 'status-live' : 'status-pending'}"></span>
+            </span>
+          </p>
+          <div class="mt-auto flex space-x-2 pt-4">
+            <button class="editBtn bg-yellow-400 hover:bg-yellow-500 px-3 py-1 rounded text-sm font-semibold">Edit</button>
+            <button class="deleteBtn bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm font-semibold text-white">Delete</button>
+            ${isPending ? '<button class="verifyBtn bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm font-semibold text-white">Verify</button>' : ''}
+          </div>
+        `;
+
+        // Edit button
+        card.querySelector('.editBtn').onclick = () => {
+          if (isLive) {
+            showModal("Your listing is currently live. To edit, please contact the support team.");
+          } else {
+            showModal("Your listing is not yet verified. You cannot edit it. Please contact the support team.");
+          }
+        };
+
+        // Delete button
+        card.querySelector('.deleteBtn').onclick = () => {
+          if (isLive) {
+            showModal("Your listing is currently live. To delete, please contact the support team.");
+          } else {
+            showModal("Your listing is not yet verified. You cannot delete it. Please contact the support team.");
+          }
+        };
+
+        // Verify button
+        const verifyBtn = card.querySelector('.verifyBtn');
+        if (verifyBtn) {
+          verifyBtn.onclick = () => {
+            const code = prompt("Enter the verification code:");
+            if (code === '1234') {
+              listing.verified = true;
+              saveListings(listings);
+              showModal("Listing verified successfully! Status is now Live.");
+              renderListings();
+            } else {
+              showModal("Incorrect code. Your listing is not yet verified.");
+            }
+          };
+        }
+
+        listingsContainer.appendChild(card);
+      });
+    }
+
     renderListings();
   </script>
 </body>
