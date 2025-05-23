@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Host Your Property - Nova Stays KE</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
   <!-- Header -->
-  <header class="bg-white shadow p-4 flex justify-between items-start">
+  <header class="bg-white shadow p-4 flex justify-between items-center">
     <h1 class="text-xl font-bold text-green-600">Nova Stays KE</h1>
     <div class="text-sm text-gray-600 text-right leading-snug">
       <span class="font-semibold">Host Portal</span><br />
@@ -17,134 +17,158 @@
     </div>
   </header>
 
-  <!-- Form Section -->
-  <main class="max-w-xl mx-auto mt-8 p-4 bg-white shadow-md rounded-lg">
-    <h2 class="text-lg font-bold mb-4 text-green-700">List Your Property</h2>
-    <form id="hostForm" class="space-y-4">
-      <input type="text" name="hostName" id="hostName" placeholder="Your Full Name" class="w-full border px-3 py-2 rounded-md" required />
-      <input type="tel" name="hostPhone" id="hostPhone" placeholder="Your Phone Number (+254...)" class="w-full border px-3 py-2 rounded-md" required />
-      <input type="email" name="hostEmail" id="hostEmail" placeholder="Your Email" class="w-full border px-3 py-2 rounded-md" required />
+  <!-- Main Form -->
+  <main class="max-w-3xl mx-auto mt-8 p-6 bg-white shadow-md rounded-lg">
+    <form id="hostForm" class="space-y-6">
+      <h2 class="text-lg font-bold text-green-700">List Your Property</h2>
 
-      <input type="text" name="title" placeholder="Property Title" class="w-full border px-3 py-2 rounded-md" required />
-      <input type="text" name="location" placeholder="Location (e.g. Nairobi)" class="w-full border px-3 py-2 rounded-md" required />
-      <input type="number" name="price" placeholder="Price per night (KES)" class="w-full border px-3 py-2 rounded-md" required />
+      <!-- Host Details -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input type="text" name="hostName" placeholder="Full Name" class="border px-3 py-2 rounded-md w-full" required />
 
-      <label class="block text-sm font-semibold mt-4">Upload Listing Images</label>
-      <input type="file" id="listingImages" accept="image/*" multiple class="w-full border px-3 py-2 rounded-md" required />
-      <div id="imagePreview" class="flex flex-wrap gap-2 mt-2"></div>
+        <div class="flex gap-2">
+          <select id="countryCode" class="border rounded-md px-2">
+            <option value="+254">KE +254</option>
+            <option value="+1">US +1</option>
+            <option value="+44">UK +44</option>
+            <!-- Add more countries as needed -->
+          </select>
+          <input type="tel" name="hostPhone" placeholder="Phone Number" class="border px-3 py-2 rounded-md w-full" required />
+        </div>
 
-      <label class="block text-sm font-semibold mt-4">Upload Host Avatar</label>
-      <input type="file" id="hostAvatar" accept="image/*" class="w-full border px-3 py-2 rounded-md" required />
+        <input type="email" name="hostEmail" placeholder="Email Address" class="border px-3 py-2 rounded-md w-full" required />
+        <input type="text" name="listingName" placeholder="Listing Name" class="border px-3 py-2 rounded-md w-full" required />
+        <input type="number" name="price" placeholder="Price per Night (USD)" class="border px-3 py-2 rounded-md w-full" required />
+      </div>
 
-      <div class="mt-4">
-        <p class="font-medium text-sm mb-1">Features:</p>
-        <div class="grid grid-cols-2 gap-2 text-sm">
+      <!-- Location Details -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <select name="country" class="border px-3 py-2 rounded-md w-full" required>
+          <option value="">Select Country</option>
+          <option value="Kenya">Kenya</option>
+          <option value="USA">USA</option>
+          <option value="UK">UK</option>
+          <!-- Add more countries -->
+        </select>
+        <input type="text" name="county" placeholder="County" class="border px-3 py-2 rounded-md w-full" required />
+        <input type="text" name="address1" placeholder="Address Line 1" class="border px-3 py-2 rounded-md w-full" required />
+        <input type="text" name="address2" placeholder="Address Line 2" class="border px-3 py-2 rounded-md w-full" />
+        <input type="text" name="postalAddress" placeholder="Postal Address" class="border px-3 py-2 rounded-md w-full" required />
+      </div>
+
+      <!-- Property Details -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <select name="ownerStatus" class="border px-3 py-2 rounded-md w-full" required>
+          <option value="">Are you the Owner or Representing?</option>
+          <option value="Owner">Owner</option>
+          <option value="Company Representative">Company Representative</option>
+        </select>
+
+        <select name="propertyType" class="border px-3 py-2 rounded-md w-full" required>
+          <option value="">Property Type</option>
+          <option value="Apartment">Apartment</option>
+          <option value="Home">Home</option>
+          <option value="Villa">Villa</option>
+        </select>
+
+        <select name="bedroomSize" class="border px-3 py-2 rounded-md w-full" required>
+          <option value="">Bedrooms</option>
+          <option value="Studio">Studio</option>
+          <option value="1 Bedroom">1 Bedroom</option>
+          <option value="2 Bedroom">2 Bedroom</option>
+          <option value="3 Bedroom">3 Bedroom</option>
+        </select>
+      </div>
+
+      <!-- Document Upload -->
+      <div>
+        <p class="font-semibold">Upload ID/Passport/Driver License (Front & Back)</p>
+        <div class="grid grid-cols-2 gap-4 mt-2">
+          <input type="file" accept="image/*" class="border px-2 py-1 rounded-md" required />
+          <input type="file" accept="image/*" class="border px-2 py-1 rounded-md" required />
+        </div>
+      </div>
+
+      <!-- Features -->
+      <div>
+        <p class="font-semibold">Features</p>
+        <div class="flex flex-wrap gap-3 mt-2 text-sm">
           <label><input type="checkbox" value="WiFi" /> WiFi</label>
           <label><input type="checkbox" value="Parking" /> Parking</label>
           <label><input type="checkbox" value="TV" /> TV</label>
           <label><input type="checkbox" value="Hot Shower" /> Hot Shower</label>
           <label><input type="checkbox" value="Pool" /> Pool</label>
-          <label><input type="checkbox" value="Air Conditioning" /> Air Conditioning</label>
+          <label><input type="checkbox" value="AC" /> AC</label>
           <label><input type="checkbox" value="Kitchen" /> Kitchen</label>
-          <label><input type="checkbox" value="Washer" /> Washer</label>
           <label><input type="checkbox" value="Balcony" /> Balcony</label>
-          <label><input type="checkbox" value="Dedicated Workspace" /> Dedicated Workspace</label>
-          <label><input type="checkbox" value="Gym" /> Gym</label>
-          <label><input type="checkbox" value="Pets Allowed" /> Pets Allowed</label>
         </div>
       </div>
 
-      <button type="submit" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white text-sm py-2 rounded-md">List Property</button>
+      <!-- Image Upload with Previews -->
+      <div>
+        <label class="block font-semibold">Upload Listing Images</label>
+        <input type="file" id="listingImages" multiple accept="image/*" class="border px-2 py-1 rounded-md mt-2" />
+        <div id="imagePreview" class="mt-2 flex flex-wrap gap-2"></div>
+      </div>
+
+      <!-- Avatar Upload Preview -->
+      <div>
+        <label class="block font-semibold">Upload Your Avatar</label>
+        <input type="file" id="hostAvatar" accept="image/*" class="border px-2 py-1 rounded-md mt-2" />
+        <img id="avatarPreview" src="#" class="mt-2 w-20 h-20 rounded-full object-cover hidden" />
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md">List Property</button>
     </form>
   </main>
 
-  <!-- Modal -->
-  <div id="modal" class="fixed inset-0 bg-black/50 hidden justify-center items-center z-50">
-    <div class="bg-white p-6 rounded-lg max-w-lg w-full text-center">
-      <p id="modalMessage" class="text-gray-800 mb-6 leading-relaxed"></p>
-      <button onclick="closeModal()" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">OK</button>
+  <!-- Confirmation Modal -->
+  <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
+    <div class="bg-white p-6 rounded shadow-md max-w-md text-center">
+      <h3 class="text-lg font-bold mb-2 text-green-700">Listing Submitted!</h3>
+      <p class="text-sm text-gray-700 mb-4">
+        Your listing has been submitted successfully. It will go live after a background check for legitimacy. You will be notified via email once approved. If additional information is needed, we’ll reach out.
+      </p>
+      <button onclick="window.location.href='portal.html'" class="bg-green-600 text-white px-4 py-2 rounded">Go to Host Panel</button>
     </div>
   </div>
 
   <script>
-    const imagePreview = document.getElementById("imagePreview");
-    let previewImages = [];
+    const imageInput = document.getElementById('listingImages');
+    const imagePreview = document.getElementById('imagePreview');
+    const avatarInput = document.getElementById('hostAvatar');
+    const avatarPreview = document.getElementById('avatarPreview');
 
-    document.getElementById("listingImages").addEventListener("change", function () {
-      imagePreview.innerHTML = "";
-      previewImages = Array.from(this.files);
-
-      previewImages.forEach((file, index) => {
+    imageInput.addEventListener('change', function () {
+      imagePreview.innerHTML = '';
+      Array.from(this.files).forEach(file => {
         const reader = new FileReader();
         reader.onload = () => {
-          const div = document.createElement("div");
-          div.className = "relative";
-          div.innerHTML = `
-            <img src="${reader.result}" alt="Preview" class="w-24 h-24 object-cover rounded" />
-            <button onclick="removeImage(${index})" class="absolute top-0 right-0 bg-red-600 text-white text-xs px-1 rounded-bl">X</button>
-          `;
-          imagePreview.appendChild(div);
+          const img = document.createElement('img');
+          img.src = reader.result;
+          img.className = 'w-20 h-20 object-cover rounded-md';
+          imagePreview.appendChild(img);
         };
         reader.readAsDataURL(file);
       });
     });
 
-    function removeImage(index) {
-      previewImages.splice(index, 1);
-      document.getElementById("listingImages").dispatchEvent(new Event("change"));
-    }
-
-    function showModal(message) {
-      document.getElementById("modalMessage").innerHTML = message;
-      document.getElementById("modal").classList.remove("hidden");
-    }
-
-    function closeModal() {
-      document.getElementById("modal").classList.add("hidden");
-      window.location.href = "listing.html";
-    }
-
-    document.getElementById("hostForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      const form = e.target;
-      const hostAvatar = document.getElementById("hostAvatar").files[0];
-
-      if (!previewImages.length || !hostAvatar) {
-        showModal("Please upload both listing images and a host avatar.");
-        return;
+    avatarInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          avatarPreview.src = reader.result;
+          avatarPreview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
       }
+    });
 
-      const features = [...form.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        const avatarBase64 = reader.result;
-        const listings = JSON.parse(localStorage.getItem("novaHostListings") || "[]");
-
-        listings.push({
-          id: Date.now(),
-          hostName: form.hostName.value,
-          hostEmail: form.hostEmail.value,
-          hostPhone: form.hostPhone.value,
-          title: form.title.value,
-          location: form.location.value,
-          price: form.price.value,
-          images: previewImages.map(file => URL.createObjectURL(file)),
-          hostAvatar: avatarBase64,
-          features,
-          status: "pending"
-        });
-
-        localStorage.setItem("novaHostListings", JSON.stringify(listings));
-
-        showModal(`
-          <strong>Your listing has been made successfully!</strong><br/><br/>
-          Your listing will go live and you will be redirected to your Host Panel after a background check, which is undergoing to confirm the legitimacy of your profile under our Terms Act.<br/><br/>
-          You will receive an email once your listing is verified and live. If any additional detail is needed, we will notify you via email.
-        `);
-      };
-
-      reader.readAsDataURL(hostAvatar);
+    document.getElementById('hostForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      document.getElementById('successModal').classList.remove('hidden');
     });
   </script>
 </body>
