@@ -181,6 +181,9 @@
         document.querySelector(".fixed").remove();
         confirmationMessage.classList.remove('hidden');
         finalNote.innerHTML = `You have successfully paid <strong>${amount}</strong> via <strong>${method}</strong> for the property <strong>${params.listing}</strong>.`;
+
+        // Redirect to bookings page with user email
+        window.location.href = `mybooking.html?email=${encodeURIComponent(params.email)}`;
       }
     });
   </script>
