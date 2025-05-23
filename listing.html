@@ -254,6 +254,9 @@
   </div>
 </div>
 
+ <div id="listingContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4"></div>
+   
+
   </main>
 
   <!-- Review Modal -->
@@ -383,6 +386,36 @@
   document.getElementById('closeReviewModal').addEventListener('click', () => {
     document.getElementById('reviewModal').classList.add('hidden');
   });
+</script>
+  <script>
+document.addEventListener('DOMContentLoaded', function () {
+  const listings = JSON.parse(localStorage.getItem('nova_listings') || '[]');
+  const container = document.getElementById('listingContainer');
+
+  listings.forEach(listing => {
+    const card = document.createElement('div');
+    card.className = "rounded-2xl shadow-md overflow-hidden bg-white";
+
+    const carousel = listing.images.map(img => `<img src="${img}" class="w-full h-48 object-cover">`).join('');
+
+    card.innerHTML = `
+      <div class="relative">${carousel}</div>
+      <div class="p-4">
+        <div class="flex items-center gap-2">
+          <img src="${listing.hostProfile}" class="w-10 h-10 rounded-full object-cover" alt="Host">
+          <div>
+            <h2 class="font-semibold">${listing.listingName}</h2>
+            <p class="text-sm text-gray-500">${listing.location}</p>
+          </div>
+        </div>
+        <p class="mt-2 text-lg font-bold">KES ${listing.price} / night</p>
+        <button class="mt-2 bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600">Book Now</button>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+});
 </script>
 
 </body>
