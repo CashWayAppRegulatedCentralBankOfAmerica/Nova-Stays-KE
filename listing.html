@@ -1,107 +1,192 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nova Stays KE - Listings</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        max-width: 100vw;
-        overflow-x: hidden;
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nova Stays KE - Listings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-green-600">Nova Stays KE</h1>
+    <div class="text-right">
+      <p class="font-semibold" id="userNameDisplay">Guest</p>
+      <p class="text-sm text-gray-600" id="userEmailDisplay">Please sign in</p>
+    </div>
+  </header>
+
+  <!-- Filter Buttons -->
+  <nav class="bg-white shadow p-4 flex justify-center gap-4 mt-4">
+    <button id="btnAll" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">All Locations</button>
+    <button id="btnNairobi" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Nairobi</button>
+    <button id="btnKisumu" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Kisumu</button>
+  </nav>
+
+  <!-- Listings Container -->
+  <main class="flex-grow max-w-6xl mx-auto p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="listingsContainer">
+    <!-- Listings will be inserted here dynamically -->
+  </main>
+
+  <script>
+    // Show user info from localStorage
+    const userNameDisplay = document.getElementById("userNameDisplay");
+    const userEmailDisplay = document.getElementById("userEmailDisplay");
+
+    const userName = localStorage.getItem("userName");
+    const userEmail = localStorage.getItem("userEmail");
+
+    if (userName && userEmail) {
+      userNameDisplay.textContent = userName;
+      userEmailDisplay.textContent = userEmail;
+    } else {
+      userNameDisplay.textContent = "Guest";
+      userEmailDisplay.textContent = "Please sign in";
+    }
+
+    // Load all listings from localStorage
+    function loadListings() {
+      const listingsJSON = localStorage.getItem("novaStaysListings");
+      if (!listingsJSON) return [];
+      try {
+        return JSON.parse(listingsJSON);
+      } catch {
+        return [];
       }
-    </style>
-  </head>
-  <body class="bg-gray-50 text-gray-800">
-    <!-- Header -->
-    <header class="bg-white shadow p-4 flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-green-600">Nova Stays KE</h1>
-      <nav class="text-sm text-gray-600">
-        <a href="host.html" class="hover:underline">Become a Host</a>
-      </nav>
-    </header>
+    }
 
-    <!-- Listings Section -->
-    <main class="p-4">
-      <h2 class="text-xl font-bold mb-4 text-green-700">Available Stays</h2>
-      <div
-        id="listingContainer"
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-      >
-        <!-- Listings will be dynamically injected here -->
-      </div>
-    </main>
+    // Save listings back to localStorage
+    function saveListings(listings) {
+      localStorage.setItem("novaStaysListings", JSON.stringify(listings));
+    }
 
-    <!-- Dynamic Listings Script -->
-    <script>
-      function openDB() {
-        return new Promise((resolve, reject) => {
-          const request = indexedDB.open("NovaStaysDB", 1);
-          request.onerror = () => reject(request.error);
-          request.onsuccess = () => resolve(request.result);
+    // Render listings filtered by location
+    function renderListings(filterLocation = "All") {
+      const container = document.getElementById("listingsContainer");
+      container.innerHTML = ""; // clear current
+
+      let listings = loadListings();
+
+      if (filterLocation !== "All") {
+        listings = listings.filter(listing => listing.location.toLowerCase() === filterLocation.toLowerCase());
+      }
+
+      if (listings.length === 0) {
+        container.innerHTML = `<p class="col-span-full text-center text-gray-500">No listings found.</p>`;
+        return;
+      }
+
+      listings.forEach(listing => {
+        // Create card element
+        const card = document.createElement("article");
+        card.className = "bg-white rounded-lg shadow p-4 flex flex-col";
+
+        // Image carousel container
+        const imgContainer = document.createElement("div");
+        imgContainer.className = "mb-3 flex overflow-x-auto gap-2";
+
+        listing.images.forEach(imgSrc => {
+          const img = document.createElement("img");
+          img.src = imgSrc;
+          img.alt = listing.title + " image";
+          img.className = "w-32 h-24 object-cover rounded flex-shrink-0";
+          imgContainer.appendChild(img);
         });
-      }
+        card.appendChild(imgContainer);
 
-      async function fetchListings() {
-        const db = await openDB();
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction("listings", "readonly");
-          const store = tx.objectStore("listings");
-          const req = store.getAll();
-          req.onsuccess = () => resolve(req.result);
-          req.onerror = () => reject(req.error);
+        // Title and Location
+        const title = document.createElement("h3");
+        title.textContent = listing.title;
+        title.className = "text-lg font-semibold text-green-700";
+        card.appendChild(title);
+
+        const location = document.createElement("p");
+        location.textContent = listing.location;
+        location.className = "text-sm text-gray-500";
+        card.appendChild(location);
+
+        // Price
+        const price = document.createElement("p");
+        price.textContent = `$${listing.price} per night`;
+        price.className = "font-semibold text-gray-700 mt-1";
+        card.appendChild(price);
+
+        // Host info
+        const hostDiv = document.createElement("div");
+        hostDiv.className = "flex items-center gap-3 mt-3";
+
+        const hostImg = document.createElement("img");
+        hostImg.src = listing.hostAvatar;
+        hostImg.alt = "Host avatar";
+        hostImg.className = "w-10 h-10 rounded-full object-cover";
+
+        const hostName = document.createElement("p");
+        hostName.textContent = listing.hostName;
+        hostName.className = "text-sm text-gray-600";
+
+        hostDiv.appendChild(hostImg);
+        hostDiv.appendChild(hostName);
+        card.appendChild(hostDiv);
+
+        // Features
+        if (listing.features && listing.features.length) {
+          const featuresDiv = document.createElement("div");
+          featuresDiv.className = "flex flex-wrap gap-2 mt-3 text-xs text-green-700";
+
+          listing.features.forEach(feature => {
+            const featSpan = document.createElement("span");
+            featSpan.textContent = feature;
+            featSpan.className = "bg-green-100 px-2 py-1 rounded";
+            featuresDiv.appendChild(featSpan);
+          });
+          card.appendChild(featuresDiv);
+        }
+
+        // Rating (clickable reviews)
+        if (listing.rating) {
+          const ratingBtn = document.createElement("button");
+          ratingBtn.textContent = listing.rating;
+          ratingBtn.className = "mt-3 text-green-800 underline text-sm self-start";
+          ratingBtn.style.cursor = "pointer";
+          ratingBtn.addEventListener("click", () => {
+            alert(`Reviews for "${listing.title}":\n\n${listing.rating}`);
+          });
+          card.appendChild(ratingBtn);
+        }
+
+        // Book Now Button
+        const bookBtn = document.createElement("button");
+        bookBtn.textContent = "Book Now";
+        bookBtn.className = "mt-auto bg-green-600 hover:bg-green-700 text-white py-2 rounded mt-4";
+        bookBtn.addEventListener("click", () => {
+          const userName = localStorage.getItem("userName") || "Guest";
+          const userEmail = localStorage.getItem("userEmail") || "Not Provided";
+
+          const bookingDetails = {
+            listingId: listing.id,
+            title: listing.title,
+            location: listing.location,
+            price: listing.price,
+            userName,
+            userEmail
+          };
+          localStorage.setItem("currentBooking", JSON.stringify(bookingDetails));
+          window.location.href = "book.html";
         });
-      }
+        card.appendChild(bookBtn);
 
-      function createListingCard(listing) {
-        const card = document.createElement("div");
-        card.className =
-          "bg-white rounded-2xl shadow p-4 hover:shadow-lg transition";
+        container.appendChild(card);
+      });
+    }
 
-        const img = listing.images[0] || "";
-        const features = listing.features
-          ?.map(
-            (f) =>
-              `<span class='bg-gray-100 text-xs text-gray-600 rounded px-2 py-1'>${f}</span>`
-          )
-          .join(" ") || "";
+    // Initial render all listings
+    renderListings();
 
-        card.innerHTML = `
-          <div class="relative">
-            <img src="${img}" alt="${listing.title}" class="w-full h-48 object-cover rounded-xl" />
-            <div class="absolute top-2 right-2 text-xs bg-white px-2 py-1 rounded shadow">
-              ${listing.rating}
-            </div>
-          </div>
-          <div class="mt-3">
-            <h3 class="text-lg font-bold text-green-700">${listing.title}</h3>
-            <p class="text-sm text-gray-500">${listing.location}</p>
-            <div class="flex items-center gap-2 mt-2">
-              <img src="${listing.hostAvatar}" alt="${listing.hostName}" class="w-8 h-8 rounded-full border" />
-              <span class="text-sm text-gray-700">${listing.hostName}</span>
-            </div>
-            <p class="text-green-600 font-semibold mt-2">$${listing.price}/night</p>
-            <div class="flex flex-wrap gap-2 mt-2">${features}</div>
-          </div>
-        `;
-        return card;
-      }
-
-      async function loadListings() {
-        const container = document.getElementById("listingContainer");
-        if (!container) return;
-
-        const listings = await fetchListings();
-        listings.forEach((listing) => {
-          const card = createListingCard(listing);
-          container.appendChild(card);
-        });
-      }
-
-      window.addEventListener("DOMContentLoaded", loadListings);
-    </script>
-  </body>
+    // Filter button handlers
+    document.getElementById("btnAll").addEventListener("click", () => renderListings("All"));
+    document.getElementById("btnNairobi").addEventListener("click", () => renderListings("Nairobi"));
+    document.getElementById("btnKisumu").addEventListener("click", () => renderListings("Kisumu"));
+  </script>
+</body>
 </html>
