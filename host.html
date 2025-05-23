@@ -1,106 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Nova Stays KE - Host Listing</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
-  <style>
-    /* Add your custom styles here */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-    }
-    .modal-content {
-      background-color: white;
-      margin: 10% auto;
-      padding: 20px;
-      width: 300px;
-      border-radius: 8px;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Host Your Property - Nova Stays KE</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <h1>Host Your Listing</h1>
-  <form id="listingForm">
-    <label for="name">Name:</label>
-    <input type="text" id="name" required>
+<body class="bg-gray-50 text-gray-800">
 
-    <label for="phone">Phone Number:</label>
-    <input type="tel" id="phone" required>
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex justify-between items-start">
+    <h1 class="text-xl font-bold text-green-600">Nova Stays KE</h1>
+    <div class="text-sm text-gray-600 text-right leading-snug">
+      <span class="font-semibold">Host Portal</span><br />
+      <span>Add a New Property</span>
+    </div>
+  </header>
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" required>
+  <!-- Form Section -->
+  <main class="max-w-xl mx-auto mt-8 p-4 bg-white shadow-md rounded-lg">
+    <h2 class="text-lg font-bold mb-4 text-green-700">List Your Property</h2>
+    <form id="hostForm" class="space-y-4">
+      <input type="text" name="hostName" id="hostName" placeholder="Your Full Name" class="w-full border px-3 py-2 rounded-md" required />
+      <input type="tel" name="hostPhone" id="hostPhone" placeholder="Your Phone Number (+254...)" class="w-full border px-3 py-2 rounded-md" required />
+      <input type="email" name="hostEmail" id="hostEmail" placeholder="Your Email" class="w-full border px-3 py-2 rounded-md" required />
 
-    <label for="title">Listing Title:</label>
-    <input type="text" id="title" required>
+      <input type="text" name="title" placeholder="Property Title" class="w-full border px-3 py-2 rounded-md" required />
+      <input type="text" name="location" placeholder="Location (e.g. Nairobi)" class="w-full border px-3 py-2 rounded-md" required />
+      <input type="number" name="price" placeholder="Price per night (KES)" class="w-full border px-3 py-2 rounded-md" required />
 
-    <label for="location">Location:</label>
-    <input type="text" id="location" required>
+      <label class="block text-sm font-semibold mt-4">Upload Listing Images</label>
+      <input type="file" id="listingImages" accept="image/*" multiple class="w-full border px-3 py-2 rounded-md" required />
+      <div id="imagePreview" class="flex flex-wrap gap-2 mt-2"></div>
 
-    <label for="price">Price per night:</label>
-    <input type="number" id="price" required>
+      <label class="block text-sm font-semibold mt-4">Upload Host Avatar</label>
+      <input type="file" id="hostAvatar" accept="image/*" class="w-full border px-3 py-2 rounded-md" required />
 
-    <button type="submit">Submit</button>
-  </form>
+      <div class="mt-4">
+        <p class="font-medium text-sm mb-1">Features:</p>
+        <div class="grid grid-cols-2 gap-2 text-sm">
+          <label><input type="checkbox" value="WiFi" /> WiFi</label>
+          <label><input type="checkbox" value="Parking" /> Parking</label>
+          <label><input type="checkbox" value="TV" /> TV</label>
+          <label><input type="checkbox" value="Hot Shower" /> Hot Shower</label>
+          <label><input type="checkbox" value="Pool" /> Pool</label>
+          <label><input type="checkbox" value="Air Conditioning" /> Air Conditioning</label>
+          <label><input type="checkbox" value="Kitchen" /> Kitchen</label>
+          <label><input type="checkbox" value="Washer" /> Washer</label>
+          <label><input type="checkbox" value="Balcony" /> Balcony</label>
+          <label><input type="checkbox" value="Dedicated Workspace" /> Dedicated Workspace</label>
+          <label><input type="checkbox" value="Gym" /> Gym</label>
+          <label><input type="checkbox" value="Pets Allowed" /> Pets Allowed</label>
+        </div>
+      </div>
 
-  <div class="modal" id="successModal">
-    <div class="modal-content">
-      <p>Listing added successfully!</p>
-      <button onclick="closeModal('successModal')">OK</button>
+      <button type="submit" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white text-sm py-2 rounded-md">List Property</button>
+    </form>
+  </main>
+
+  <!-- Modal -->
+  <div id="modal" class="fixed inset-0 bg-black/50 hidden justify-center items-center z-50">
+    <div class="bg-white p-6 rounded-lg max-w-lg w-full text-center">
+      <p id="modalMessage" class="text-gray-800 mb-6 leading-relaxed"></p>
+      <button onclick="closeModal()" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">OK</button>
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
   <script>
-    const phoneInput = window.intlTelInput(document.querySelector("#phone"), {
-      utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+    const imagePreview = document.getElementById("imagePreview");
+    let previewImages = [];
+
+    document.getElementById("listingImages").addEventListener("change", function () {
+      imagePreview.innerHTML = "";
+      previewImages = Array.from(this.files);
+
+      previewImages.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const div = document.createElement("div");
+          div.className = "relative";
+          div.innerHTML = `
+            <img src="${reader.result}" alt="Preview" class="w-24 h-24 object-cover rounded" />
+            <button onclick="removeImage(${index})" class="absolute top-0 right-0 bg-red-600 text-white text-xs px-1 rounded-bl">X</button>
+          `;
+          imagePreview.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+      });
     });
 
-    const params = new URLSearchParams(window.location.search);
-    const isAddMode = params.get('mode') === 'add';
-
-    if (isAddMode) {
-      document.getElementById('name').value = localStorage.getItem('currentHostName');
-      document.getElementById('phone').value = localStorage.getItem('currentHostPhone');
-      document.getElementById('email').value = localStorage.getItem('currentHostEmail');
-      document.getElementById('name').disabled = true;
-      document.getElementById('phone').disabled = true;
-      document.getElementById('email').disabled = true;
+    function removeImage(index) {
+      previewImages.splice(index, 1);
+      document.getElementById("listingImages").dispatchEvent(new Event("change"));
     }
 
-    function closeModal(id) {
-      document.getElementById(id).style.display = 'none';
+    function showModal(message) {
+      document.getElementById("modalMessage").innerHTML = message;
+      document.getElementById("modal").classList.remove("hidden");
     }
 
-    document.getElementById('listingForm').addEventListener('submit', function (e) {
+    function closeModal() {
+      document.getElementById("modal").classList.add("hidden");
+      window.location.href = "listing.html";
+    }
+
+    document.getElementById("hostForm").addEventListener("submit", function (e) {
       e.preventDefault();
-      const listings = JSON.parse(localStorage.getItem('novaStaysListings')) || [];
-      const newListing = {
-        id: Date.now(),
-        name: document.getElementById('name').value,
-        phone: document.getElementById('phone').value,
-        email: document.getElementById('email').value,
-        title: document.getElementById('title').value,
-        location: document.getElementById('location').value,
-        price: document.getElementById('price').value,
-        verified: false
-      };
-      listings.push(newListing);
-      localStorage.setItem('novaStaysListings', JSON.stringify(listings));
+      const form = e.target;
+      const hostAvatar = document.getElementById("hostAvatar").files[0];
 
-      // Save host info if first time
-      if (!isAddMode) {
-        localStorage.setItem('currentHostName', newListing.name);
-        localStorage.setItem('currentHostPhone', newListing.phone);
-        localStorage.setItem('currentHostEmail', newListing.email);
+      if (!previewImages.length || !hostAvatar) {
+        showModal("Please upload both listing images and a host avatar.");
+        return;
       }
 
-      document.getElementById('successModal').style.display = 'block';
-      setTimeout(() => window.location.href = 'portal.html', 2000);
+      const features = [...form.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const avatarBase64 = reader.result;
+        const listings = JSON.parse(localStorage.getItem("novaHostListings") || "[]");
+
+        listings.push({
+          id: Date.now(),
+          hostName: form.hostName.value,
+          hostEmail: form.hostEmail.value,
+          hostPhone: form.hostPhone.value,
+          title: form.title.value,
+          location: form.location.value,
+          price: form.price.value,
+          images: previewImages.map(file => URL.createObjectURL(file)),
+          hostAvatar: avatarBase64,
+          features,
+          status: "pending"
+        });
+
+        localStorage.setItem("novaHostListings", JSON.stringify(listings));
+
+        showModal(`
+          <strong>Your listing has been made successfully!</strong><br/><br/>
+          Your listing will go live and you will be redirected to your Host Panel after a background check, which is undergoing to confirm the legitimacy of your profile under our Terms Act.<br/><br/>
+          You will receive an email once your listing is verified and live. If any additional detail is needed, we will notify you via email.
+        `);
+      };
+
+      reader.readAsDataURL(hostAvatar);
     });
   </script>
 </body>
