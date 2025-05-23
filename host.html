@@ -4,12 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Host Your Property - Nova Stays KE</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/pica@8.0.0/dist/pica.min.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+  </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
   <!-- Header -->
-  <header class="bg-white shadow p-4 flex justify-between items-start">
+  <header class="bg-white shadow p-4 flex justify-between items-center">
     <h1 class="text-xl font-bold text-green-600">Nova Stays KE</h1>
     <div class="text-sm text-gray-600 text-right leading-snug">
       <span class="font-semibold">Host Portal</span><br />
@@ -20,20 +31,74 @@
   <!-- Form Section -->
   <main class="max-w-xl mx-auto mt-8 p-4 bg-white shadow-md rounded-lg">
     <h2 class="text-lg font-bold mb-4 text-green-700">List Your Property</h2>
-    <form id="hostForm" class="space-y-4">
-      <input type="text" name="hostName" placeholder="Your Full Name" class="w-full border px-3 py-2 rounded-md" required />
-      <input type="email" name="hostEmail" placeholder="Your Email" class="w-full border px-3 py-2 rounded-md" required />
-      <input type="tel" name="hostPhone" placeholder="Your Phone Number" class="w-full border px-3 py-2 rounded-md" required />
+    <form id="hostForm" class="space-y-4" autocomplete="off">
 
-      <input type="text" name="title" placeholder="Property Title" class="w-full border px-3 py-2 rounded-md" required />
-      <input type="text" name="location" placeholder="Location (e.g. Nairobi)" class="w-full border px-3 py-2 rounded-md" required />
-      <input type="number" name="price" placeholder="Price per night (KES)" class="w-full border px-3 py-2 rounded-md" required />
+      <input
+        type="text"
+        name="title"
+        placeholder="Property Title"
+        class="w-full border px-3 py-2 rounded-md"
+        required
+      />
+      <input
+        type="text"
+        name="location"
+        placeholder="Location (e.g. Nairobi)"
+        class="w-full border px-3 py-2 rounded-md"
+        required
+      />
+      <input
+        type="number"
+        name="price"
+        placeholder="Price per night (USD)"
+        class="w-full border px-3 py-2 rounded-md"
+        required
+        min="1"
+      />
+      <input
+        type="text"
+        name="hostName"
+        placeholder="Your Name"
+        class="w-full border px-3 py-2 rounded-md"
+        required
+      />
+      <input
+        type="email"
+        name="hostEmail"
+        placeholder="Your Email"
+        class="w-full border px-3 py-2 rounded-md"
+        required
+      />
+      <input
+        type="tel"
+        name="hostPhone"
+        placeholder="Your Phone Number"
+        class="w-full border px-3 py-2 rounded-md"
+        required
+      />
 
-      <label class="block text-sm font-semibold mt-4">Upload Listing Images</label>
-      <input type="file" id="listingImages" accept="image/*" multiple class="w-full border px-3 py-2 rounded-md" required />
+      <label class="block text-sm font-semibold mt-4 text-gray-700"
+        >Upload Listing Images (unlimited)</label
+      >
+      <input
+        type="file"
+        id="listingImages"
+        accept="image/*"
+        multiple
+        class="w-full border px-3 py-2 rounded-md"
+        required
+      />
 
-      <label class="block text-sm font-semibold mt-4">Upload Host Avatar</label>
-      <input type="file" id="hostAvatar" accept="image/*" class="w-full border px-3 py-2 rounded-md" required />
+      <label class="block text-sm font-semibold mt-4 text-gray-700"
+        >Upload Host Avatar</label
+      >
+      <input
+        type="file"
+        id="hostAvatar"
+        accept="image/*"
+        class="w-full border px-3 py-2 rounded-md"
+        required
+      />
 
       <div class="mt-4">
         <p class="font-medium text-sm mb-1">Features:</p>
@@ -43,53 +108,134 @@
           <label><input type="checkbox" value="TV" /> TV</label>
           <label><input type="checkbox" value="Hot Shower" /> Hot Shower</label>
           <label><input type="checkbox" value="Pool" /> Pool</label>
+          <label><input type="checkbox" value="Balcony" /> Balcony</label>
+          <label><input type="checkbox" value="Air Conditioning" /> Air Conditioning</label>
+          <label><input type="checkbox" value="Breakfast" /> Breakfast</label>
         </div>
       </div>
 
-      <button type="submit" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white text-sm py-2 rounded-md">Submit Property</button>
+      <button
+        type="submit"
+        class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white text-sm py-2 rounded-md"
+      >
+        Submit Property
+      </button>
     </form>
   </main>
 
   <script>
-    document.getElementById("hostForm").addEventListener("submit", function (e) {
+    // Compress image with Pica, return base64
+    async function compressImage(file, maxWidth = 800, quality = 0.7) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onload = () => {
+          const img = new Image();
+          img.src = reader.result;
+
+          img.onload = async () => {
+            const canvas = document.createElement("canvas");
+            const scaleFactor = maxWidth / img.width;
+            canvas.width = maxWidth;
+            canvas.height = img.height * scaleFactor;
+
+            const pica = window.pica();
+            try {
+              const resized = await pica.resize(img, canvas);
+              const blob = await pica.toBlob(resized, "image/jpeg", quality);
+
+              const compressedReader = new FileReader();
+              compressedReader.readAsDataURL(blob);
+              compressedReader.onloadend = () => resolve(compressedReader.result);
+            } catch (err) {
+              reject(err);
+            }
+          };
+          img.onerror = () => reject(new Error("Image load error"));
+        };
+
+        reader.onerror = () => reject(reader.error);
+      });
+    }
+
+    // Load listings from localStorage (array)
+    function loadListings() {
+      const stored = localStorage.getItem("novaStaysListings");
+      if (!stored) return [];
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return [];
+      }
+    }
+
+    // Save listings array to localStorage
+    function saveListings(listings) {
+      localStorage.setItem("novaStaysListings", JSON.stringify(listings));
+    }
+
+    const form = document.getElementById("hostForm");
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const form = e.target;
+      const listingFiles = [...document.getElementById("listingImages").files];
+      const avatarFile = document.getElementById("hostAvatar").files[0];
 
-      const listingImages = [...document.getElementById("listingImages").files];
-      const hostAvatar = document.getElementById("hostAvatar").files[0];
-
-      if (!listingImages.length || !hostAvatar) {
+      if (!listingFiles.length || !avatarFile) {
         alert("Please upload listing images and a host avatar.");
         return;
       }
 
-      const features = [...form.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
+      try {
+        // Compress all listing images (no max limit now)
+        const listingImages = await Promise.all(
+          listingFiles.map((file) => compressImage(file, 600, 0.4))
+        );
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        const avatarBase64 = reader.result;
+        // Compress avatar
+        const hostAvatar = await compressImage(avatarFile, 300, 0.5);
 
-        const listings = JSON.parse(localStorage.getItem("novaHostListings") || "[]");
+        // Gather features
+        const features = [...form.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
 
-        listings.push({
+        // Build new listing object with verification pending initially
+        const newListing = {
           id: Date.now(),
-          hostName: form.hostName.value,
-          hostEmail: form.hostEmail.value,
-          hostPhone: form.hostPhone.value,
-          title: form.title.value,
-          location: form.location.value,
-          price: form.price.value,
-          images: listingImages.map(file => URL.createObjectURL(file)),
-          hostAvatar: avatarBase64,
+          title: form.title.value.trim(),
+          location: form.location.value.trim(),
+          price: Number(form.price.value),
+          images: listingImages,
+          hostName: form.hostName.value.trim(),
+          hostEmail: form.hostEmail.value.trim(),
+          hostPhone: form.hostPhone.value.trim(),
+          hostAvatar,
           features,
-          status: "pending"
-        });
+          verificationStatus: "pending", // pending or live
+          bookings: []
+        };
 
-        localStorage.setItem("novaHostListings", JSON.stringify(listings));
+        // Load existing listings, add new, save back
+        const listings = loadListings();
+        listings.push(newListing);
+        saveListings(listings);
+
+        // Save host info separately for portal to read
+        localStorage.setItem('currentHostName', newListing.hostName);
+        localStorage.setItem('currentHostEmail', newListing.hostEmail);
+        localStorage.setItem('currentHostPhone', newListing.hostPhone);
+
+        alert("Property listed successfully! Redirecting to your Host Portal...");
+
+        form.reset();
+
+        // Redirect to portal.html
         window.location.href = "portal.html";
-      };
-      reader.readAsDataURL(hostAvatar);
+
+      } catch (err) {
+        alert("Error processing images: " + err.message);
+      }
     });
   </script>
 </body>
