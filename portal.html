@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Host Portal - Nova Stays KE</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-green-600">Nova Stays KE</h1>
+    <div class="text-right text-sm text-gray-700 leading-tight">
+      <p class="font-semibold">John Doe</p>
+      <p>johndoe@example.com</p>
+      <p>+254 712 345678</p>
+    </div>
+  </header>
+
+  <!-- Portal Content -->
+  <main class="max-w-5xl mx-auto mt-8 px-4">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">Your Listings</h2>
+
+    <div id="listingsContainer" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <!-- Listings will be injected here -->
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div id="errorModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded shadow text-center">
+      <p class="text-red-600 font-semibold mb-4">Incorrect verification code. Listing not verified.</p>
+      <button onclick="closeModal()" class="px-4 py-2 bg-green-600 text-white rounded">Close</button>
+    </div>
+  </div>
+
+  <script>
+    // Sample placeholder listing data
+    const listings = [
+      {
+        id: 1,
+        title: "Cozy Apartment in Kilimani",
+        price: 65,
+        image: "https://via.placeholder.com/300",
+        status: "pending" // or "live"
+      },
+      {
+        id: 2,
+        title: "Luxury Villa in Karen",
+        price: 150,
+        image: "https://via.placeholder.com/300",
+        status: "pending"
+      }
+    ];
+
+    function renderListings() {
+      const container = document.getElementById("listingsContainer");
+      container.innerHTML = "";
+
+      listings.forEach(listing => {
+        const card = document.createElement("div");
+        card.className = "bg-white rounded shadow p-4 flex flex-col gap-2";
+
+        const statusLabel = listing.status === "live"
+          ? '<span class="text-green-600 font-semibold text-sm flex items-center">Live <span class="ml-2 w-2 h-2 bg-green-600 rounded-full inline-block"></span></span>'
+          : '<span class="text-yellow-600 font-medium text-sm">Pending Verification</span>';
+
+        card.innerHTML = `
+          <img src="${listing.image}" class="w-full h-40 object-cover rounded" />
+          <h3 class="text-lg font-bold">${listing.title}</h3>
+          <p class="text-gray-700">Price: $${listing.price}/night</p>
+          ${statusLabel}
+          <div class="flex gap-2 mt-2">
+            <button onclick="editListing(${listing.id})" class="px-3 py-1 bg-blue-500 text-white text-sm rounded">Edit</button>
+            <button onclick="deleteListing(${listing.id})" class="px-3 py-1 bg-red-500 text-white text-sm rounded">Delete</button>
+            <button onclick="verifyListing(${listing.id})" class="px-3 py-1 bg-yellow-500 text-white text-sm rounded">Verify</button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function editListing(id) {
+      alert("Edit functionality coming soon.");
+    }
+
+    function deleteListing(id) {
+      const index = listings.findIndex(l => l.id === id);
+      if (index !== -1) {
+        if (confirm("Are you sure you want to delete this listing?")) {
+          listings.splice(index, 1);
+          renderListings();
+        }
+      }
+    }
+
+    function verifyListing(id) {
+      const code = prompt("Enter verification code:");
+      if (code === "1234") {
+        const listing = listings.find(l => l.id === id);
+        if (listing) {
+          listing.status = "live";
+          renderListings();
+        }
+      } else {
+        document.getElementById("errorModal").classList.remove("hidden");
+      }
+    }
+
+    function closeModal() {
+      document.getElementById("errorModal").classList.add("hidden");
+    }
+
+    renderListings();
+  </script>
+</body>
+</html>
